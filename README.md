@@ -30,7 +30,7 @@ O objetivo do projeto é centralizar informações e tornar o processo de adoç�
 1. Clone o repositório:
 
 ```bash
-git clone https://github.com/seuusuario/bonny.git
+git clone https://github.com/NexusTech-Dev/Bonny.git
 ```
 
 2. Entre no diretório do projeto:
