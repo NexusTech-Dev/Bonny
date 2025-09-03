@@ -1,19 +1,17 @@
-// src/pages/AnimalRegister.jsx
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { PawPrint, Save, Upload } from "lucide-react";
 
 export default function AnimalRegister() {
-    const [preview, setPreview] = useState(null);
+    const [preview, setPreview] = useState<string | null>(null);
 
-    const handleImageChange = (e) => {
-        const file = e.target.files[0];
+    const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
         if (file) setPreview(URL.createObjectURL(file));
     };
 
     return (
-        <div className="min-h-screen bg-gradient-to-br  flex flex-col items-center px-4 py-10">
-            {/* Título */}
+        <div className="min-h-screen bg-gradient-to-br flex flex-col items-center px-4 py-10">
             <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -23,14 +21,12 @@ export default function AnimalRegister() {
                 <PawPrint className="w-8 h-8 text-blue-600" /> Cadastro de Animais
             </motion.h1>
 
-            {/* Card de Formulário */}
             <motion.form
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6 }}
                 className="bg-white w-full max-w-4xl rounded-3xl shadow-2xl p-10 space-y-8"
             >
-                {/* Upload de Imagem */}
                 <div className="flex flex-col items-center">
                     <label
                         className={`cursor-pointer flex flex-col items-center justify-center w-40 h-40 rounded-full 
@@ -63,7 +59,6 @@ export default function AnimalRegister() {
                     )}
                 </div>
 
-                {/* Informações principais */}
                 <section>
                     <h2 className="text-lg font-semibold text-gray-700 mb-4">Informações do Animal</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -86,11 +81,11 @@ export default function AnimalRegister() {
                             type="number"
                             placeholder="Idade (anos)"
                             className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none"
+                            onChange={(e) => Number(e.target.value)}
                         />
                     </div>
                 </section>
 
-                {/* Status & Saúde */}
                 <section>
                     <h2 className="text-lg font-semibold text-gray-700 mb-4">Status & Saúde</h2>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -108,11 +103,10 @@ export default function AnimalRegister() {
                     </div>
                 </section>
 
-                {/* Observações */}
                 <section>
                     <h2 className="text-lg font-semibold text-gray-700 mb-4">Observações</h2>
                     <textarea
-                        rows="4"
+                        rows={4}
                         placeholder="Escreva detalhes adicionais sobre o animal..."
                         className="w-full px-4 py-3 rounded-2xl border border-gray-200 bg-gray-50 focus:ring-2 focus:ring-blue-500 outline-none resize-none"
                     ></textarea>

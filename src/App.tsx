@@ -10,10 +10,8 @@ export default function App() {
     return (
         <Router>
             <div className="flex h-screen bg-gray-100">
-                {/* Sidebar fixa */}
                 <Sidebar/>
 
-                {/* Conteúdo principal */}
                 <main className="flex-1 p-6 overflow-y-auto">
                     <Routes>
                         <Route path="/" element={<Dashboard/>}/>

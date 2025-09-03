@@ -1,9 +1,7 @@
-// src/pages/Dashboard.tsx
 import { motion } from "framer-motion";
 import { PawPrint, User, FileText } from "lucide-react";
 
 export default function Dashboard() {
-    // Dados fictícios (no futuro você pode substituir por dados reais do backend)
     const stats = [
         { id: 1, label: "Animais", value: 128, icon: PawPrint, color: "from-blue-400 to-blue-600" },
         { id: 2, label: "Funcionários", value: 12, icon: User, color: "from-green-400 to-green-600" },
