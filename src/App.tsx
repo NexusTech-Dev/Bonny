@@ -5,10 +5,15 @@ import StaffRegister from "./pages/StaffRegister";
 import Dashboard from "./pages/Dashboard.tsx";
 import VaccineRegister from "./pages/VaccineRegister.tsx";
 import AdoptionRegister from "./pages/AdoptionRegister.tsx";
+import Login from "./pages/Login.tsx";
 
 export default function App() {
     return (
         <Router>
+            <Routes>
+                <Route path="/Login" element={<Login/>}/>
+            </Routes>
+
             <div className="flex h-screen bg-gray-100">
                 <Sidebar/>
 
