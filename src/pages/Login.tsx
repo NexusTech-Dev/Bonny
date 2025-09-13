@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import { motion } from "framer-motion";
 import { PawPrint } from "lucide-react";
 
@@ -11,13 +10,11 @@ export default function Login() {
                 transition={{ duration: 0.6 }}
                 className="bg-white p-8 rounded-2xl shadow-xl w-full max-w-md"
             >
-                {/* Logo */}
                 <div className="flex items-center justify-center gap-2 mb-6">
                     <PawPrint className="w-8 h-8 text-blue-600" />
                     <h1 className="text-2xl font-bold text-gray-800">PetControl - Sistema Interno</h1>
                 </div>
 
-                {/* Formulário */}
                 <form className="flex flex-col gap-4">
                     <div>
                         <label className="block text-sm font-medium text-gray-700">E-mail</label>
@@ -45,7 +42,6 @@ export default function Login() {
                     </motion.button>
                 </form>
 
-                {/* Footer */}
                 <p className="text-sm text-gray-500 text-center mt-6">
                     Sistema exclusivo para funcionários da ONG
                 </p>
