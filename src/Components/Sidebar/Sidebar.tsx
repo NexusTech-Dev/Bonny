@@ -9,10 +9,13 @@ import {
     PawPrint,
 } from "lucide-react";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { logoutUser } from "../../services/authService";
 
 function SideBar() {
     const [isOpen, setIsOpen] = useState(false);
     const [showToggleButton, setShowToggleButton] = useState(true);
+    const navigate = useNavigate();
 
     const menuItems = [
         { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
@@ -31,9 +34,17 @@ function SideBar() {
         }
     }, [isOpen]);
 
+    const handleLogout = async () => {
+        try {
+            await logoutUser();
+            navigate("/login");
+        } catch (error) {
+            console.error("Erro ao fazer logout:", error);
+        }
+    };
+
     return (
         <>
-            {/* Overlay no mobile */}
             {isOpen && (
                 <div
                     className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden"
@@ -41,7 +52,6 @@ function SideBar() {
                 />
             )}
 
-            {/* Sidebar */}
             <aside
                 className={`fixed top-0 left-0 z-40 h-full w-64 
                 bg-gradient-to-b from-blue-600 via-blue-500 to-blue-400 
@@ -50,7 +60,6 @@ function SideBar() {
                 ${isOpen ? "translate-x-0" : "-translate-x-full"} 
                 lg:static lg:translate-x-0`}
             >
-                {/* Topo */}
                 <div>
                     <button
                         className="lg:hidden mb-6"
@@ -59,7 +68,6 @@ function SideBar() {
                         <X className="w-6 h-6 text-white" />
                     </button>
 
-                    {/* Logo */}
                     <div className="flex flex-col items-center mb-10">
                         <div className="w-16 h-16 flex items-center justify-center bg-white rounded-full shadow-md mb-3">
                             <PawPrint className="w-8 h-8 text-blue-600" />
@@ -69,7 +77,6 @@ function SideBar() {
                         </h1>
                     </div>
 
-                    {/* Links */}
                     <nav className="flex flex-col gap-3">
                         {menuItems.map((item) => {
                             const Icon = item.icon;
@@ -89,10 +96,9 @@ function SideBar() {
                     </nav>
                 </div>
 
-                {/* Logout */}
                 <div className="mt-6">
                     <button
-                        onClick={() => alert("Logout futuramente")}
+                        onClick={handleLogout}
                         className="flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-white/10 hover:bg-red-500 transition"
                     >
                         <LogOut className="w-5 h-5 text-white" />
@@ -101,7 +107,6 @@ function SideBar() {
                 </div>
             </aside>
 
-            {/* Botão toggle no mobile */}
             {showToggleButton && !isOpen && (
                 <div className="lg:hidden absolute top-4 left-4 z-50">
                     <button

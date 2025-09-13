@@ -1,0 +1,11 @@
+import { Navigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import type {JSX} from "react";
+import ProtectedSkeleton from "../Components/ProtectedSkeleton/ProtectedSkeleton.tsx";
+
+export default function PrivateRoute({ children }: { children: JSX.Element }) {
+    const { user, loading } = useAuth();
+
+    if (loading) return <ProtectedSkeleton />;
+    return user ? children : <Navigate to="/login" />;
+}
