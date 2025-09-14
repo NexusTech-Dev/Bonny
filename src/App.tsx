@@ -1,6 +1,7 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./Components/Sidebar/Sidebar.tsx";
 import AnimalRegister from "./pages/AnimalRegister";
+import AnimalList from "./pages/AnimalList.tsx";
 import StaffRegister from "./pages/StaffRegister";
 import Dashboard from "./pages/Dashboard.tsx";
 import VaccineRegister from "./pages/VaccineRegister.tsx";
@@ -50,6 +51,16 @@ export default function App() {
                             <PrivateRoute>
                                 <ProtectedLayout>
                                     <AnimalRegister />
+                                </ProtectedLayout>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/animalList"
+                        element={
+                            <PrivateRoute>
+                                <ProtectedLayout>
+                                    <AnimalList />
                                 </ProtectedLayout>
                             </PrivateRoute>
                         }
