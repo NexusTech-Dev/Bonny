@@ -88,51 +88,56 @@ export default function AnimalList() {
                     Nenhum animal cadastrado. Clique em "Cadastrar" para adicionar um novo!
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {animals.map((animal) => (
-                        <div key={animal.id} className="rounded-2xl shadow-md hover:shadow-xl transition bg-white overflow-hidden group">
-                            <div className="h-40 bg-gray-200 flex items-center justify-center relative">
-                                <span className="text-gray-400 group-hover:opacity-0 transition">Imagem</span>
-                                {animal.image && (
-                                    <img
-                                        src={animal.image}
-                                        alt={animal.name}
-                                        className="absolute inset-0 w-full h-full object-cover"
-                                    />
-                                )}
-                                <button
-                                    onClick={() => setDeleteAnimal(animal)}
-                                    className="absolute top-2 right-2 text-red-500 bg-white p-1 rounded-full hover:bg-red-50 transition"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                            <div className="p-4 flex flex-col gap-2">
-                                <div className="flex justify-between items-center">
-                                    <h2 className="font-semibold text-gray-800 text-lg">{animal.name}</h2>
-                                    <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusStyle(animal.status)}`}>
-                                        {animal.status}
-                                    </span>
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {animals.map((animal) => (
+                            <div key={animal.id} className="rounded-2xl shadow-md hover:shadow-xl transition bg-white overflow-hidden group">
+                                <div className="h-40 bg-gray-200 flex items-center justify-center relative">
+                                    <span className="text-gray-400 group-hover:opacity-0 transition">Imagem</span>
+                                    {animal.image && (
+                                        <img
+                                            src={animal.image}
+                                            alt={animal.name}
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                        />
+                                    )}
+                                    <button
+                                        onClick={() => setDeleteAnimal(animal)}
+                                        className="absolute top-2 right-2 text-red-500 bg-white p-1 rounded-full hover:bg-red-50 transition"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
                                 </div>
-                                <p className="text-sm text-gray-600">{animal.age} • {animal.breed}</p>
-                                <button
-                                    onClick={() => setSelectedAnimal(animal)}
-                                    className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
-                                >
-                                    Ver detalhes
-                                </button>
+                                <div className="p-4 flex flex-col gap-2">
+                                    <div className="flex justify-between items-center">
+                                        <h2 className="font-semibold text-gray-800 text-lg">{animal.name}</h2>
+                                        <span className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusStyle(animal.status)}`}>
+                                            {animal.status}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-600">{animal.age} • {animal.breed}</p>
+                                    <button
+                                        onClick={() => setSelectedAnimal(animal)}
+                                        className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
+                                    >
+                                        Ver detalhes
+                                    </button>
+                                </div>
                             </div>
-                        </div>
-                    ))}
+                        ))}
+                    </div>
+
                     <div className="flex justify-center gap-2 mt-6">
                         {[1, 2, 3, 4, 5].map((page) => (
-                            <button key={page} className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-blue-50 transition text-sm">
+                            <button
+                                key={page}
+                                className="px-3 py-1 border border-gray-300 rounded-lg hover:bg-blue-50 transition text-sm"
+                            >
                                 {page}
                             </button>
                         ))}
                     </div>
-                </div>
-
+                </>
             )}
 
             {selectedAnimal && (
