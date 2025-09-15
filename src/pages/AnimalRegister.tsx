@@ -1,14 +1,14 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { PawPrint, Save, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { registerAnimal } from "../services/animalService";
+import toast from "react-hot-toast";
 
 export default function AnimalRegister() {
     const [preview, setPreview] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
     const [loading, setLoading] = useState(false);
-
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -24,11 +24,14 @@ export default function AnimalRegister() {
         notes: "",
     });
 
+    const [errors, setErrors] = useState<{ [key: string]: string }>({});
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
+        setErrors({ ...errors, [name]: "" });
     };
 
     const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -36,26 +39,57 @@ export default function AnimalRegister() {
         if (file) {
             setPreview(URL.createObjectURL(file));
             setImageFile(file);
+            setErrors({ ...errors, image: "" });
         }
+    };
+
+    const validate = () => {
+        const newErrors: { [key: string]: string } = {};
+        Object.entries(formData).forEach(([key, value]) => {
+            if (!value) newErrors[key] = "Campo obrigatório";
+        });
+        setErrors(newErrors);
+        return Object.keys(newErrors).length === 0;
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        setLoading(true);
+        if (!validate()) return;
 
+        setLoading(true);
         try {
             await registerAnimal(formData, imageFile || undefined);
+            setFormData({
+                name: "",
+                birthDate: "",
+                sex: "",
+                color: "",
+                species: "",
+                breed: "",
+                rescueDate: "",
+                size: "",
+                status: "",
+                notes: "",
+            });
+            setImageFile(null);
+            setPreview(null);
+            setErrors({});
+            toast.success("Animal cadastrado com sucesso!");
         } catch (err) {
-            alert("Erro ao cadastrar animal.");
+            console.error(err);
+            toast.error("Erro ao cadastrar animal.");
         } finally {
             setLoading(false);
         }
     };
 
-    const inputModern =
-        "w-full px-4 py-3 rounded-xl bg-gray-100/70 shadow-sm " +
-        "focus:ring-2 focus:ring-blue-500 focus:outline-none " +
-        "transition placeholder-gray-400 text-gray-800";
+    const inputModern = (error?: boolean) =>
+        `w-full px-4 py-3 rounded-xl shadow-sm focus:ring-2 focus:outline-none transition placeholder-gray-400 text-gray-800 ` +
+        (error
+            ? "border-2 border-red-500 focus:ring-red-500 bg-red-50"
+            : "bg-gray-100/70 focus:ring-blue-500");
+
+    const errorStyle = "text-sm text-red-500 mt-1";
 
     return (
         <div className="min-h-screen flex flex-col items-center px-4 py-10">
@@ -78,15 +112,27 @@ export default function AnimalRegister() {
                 <section>
                     <h2 className="text-lg font-semibold text-gray-700 mb-4">Informações do Animal</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <input type="text" name="name" placeholder="Nome" value={formData.name} onChange={handleChange} className={inputModern} />
-                        <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className={inputModern} />
-                        <div className="flex flex-wrap gap-4 items-center">
-                            <label className="flex items-center gap-2 text-gray-700">
-                                <input type="radio" name="sex" value="M" onChange={handleChange} className="accent-blue-600" /> Masculino
-                            </label>
-                            <label className="flex items-center gap-2 text-gray-700">
-                                <input type="radio" name="sex" value="F" onChange={handleChange} className="accent-blue-600" /> Feminino
-                            </label>
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-medium text-gray-700">Nome</label>
+                            <input type="text" name="name" value={formData.name} onChange={handleChange} className={inputModern(!!errors.name)} />
+                            {errors.name && <span className={errorStyle}>{errors.name}</span>}
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-medium text-gray-700">Data de Nascimento</label>
+                            <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className={inputModern(!!errors.birthDate)} />
+                            {errors.birthDate && <span className={errorStyle}>{errors.birthDate}</span>}
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-medium text-gray-700">Sexo</label>
+                            <div className="flex flex-wrap gap-4 items-center mt-1">
+                                <label className="flex items-center gap-2 text-gray-700">
+                                    <input type="radio" name="sex" value="M" onChange={handleChange} className="accent-blue-600" /> Macho
+                                </label>
+                                <label className="flex items-center gap-2 text-gray-700">
+                                    <input type="radio" name="sex" value="F" onChange={handleChange} className="accent-blue-600" /> Fêmea
+                                </label>
+                            </div>
+                            {errors.sex && <span className={errorStyle}>{errors.sex}</span>}
                         </div>
                     </div>
                 </section>
@@ -94,48 +140,74 @@ export default function AnimalRegister() {
                 <section>
                     <h2 className="text-lg font-semibold text-gray-700 mb-4">Características</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        <input type="text" name="color" placeholder="Cor" value={formData.color} onChange={handleChange} className={inputModern} />
-                        <select name="species" value={formData.species} onChange={handleChange} className={inputModern}>
-                            <option value="">Espécie</option>
-                            <option value="cachorro">Cachorro</option>
-                            <option value="gato">Gato</option>
-                        </select>
-                        <input type="text" name="breed" placeholder="Raça" value={formData.breed} onChange={handleChange} className={inputModern} />
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-medium text-gray-700">Cor</label>
+                            <input type="text" name="color" value={formData.color} onChange={handleChange} className={inputModern(!!errors.color)} />
+                            {errors.color && <span className={errorStyle}>{errors.color}</span>}
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-medium text-gray-700">Espécie</label>
+                            <select name="species" value={formData.species} onChange={handleChange} className={inputModern(!!errors.species)}>
+                                <option value="">Selecione a espécie</option>
+                                <option value="cachorro">Cachorro</option>
+                                <option value="gato">Gato</option>
+                            </select>
+                            {errors.species && <span className={errorStyle}>{errors.species}</span>}
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-medium text-gray-700">Raça</label>
+                            <input type="text" name="breed" value={formData.breed} onChange={handleChange} className={inputModern(!!errors.breed)} />
+                            {errors.breed && <span className={errorStyle}>{errors.breed}</span>}
+                        </div>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
-                        <input type="date" name="rescueDate" value={formData.rescueDate} onChange={handleChange} className={inputModern} />
-                        <select name="size" value={formData.size} onChange={handleChange} className={inputModern}>
-                            <option value="">Porte</option>
-                            <option value="pequeno">Pequeno</option>
-                            <option value="medio">Médio</option>
-                            <option value="grande">Grande</option>
-                        </select>
-                        <select name="status" value={formData.status} onChange={handleChange} className={inputModern}>
-                            <option value="">Status</option>
-                            <option value="disponivel">Disponível</option>
-                            <option value="adotado">Adotado</option>
-                            <option value="tratamento">Em Tratamento</option>
-                        </select>
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-medium text-gray-700">Data de Resgate</label>
+                            <input type="date" name="rescueDate" value={formData.rescueDate} onChange={handleChange} className={inputModern(!!errors.rescueDate)} />
+                            {errors.rescueDate && <span className={errorStyle}>{errors.rescueDate}</span>}
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-medium text-gray-700">Porte</label>
+                            <select name="size" value={formData.size} onChange={handleChange} className={inputModern(!!errors.size)}>
+                                <option value="">Selecione o porte</option>
+                                <option value="pequeno">Pequeno</option>
+                                <option value="medio">Médio</option>
+                                <option value="grande">Grande</option>
+                            </select>
+                            {errors.size && <span className={errorStyle}>{errors.size}</span>}
+                        </div>
+                        <div className="flex flex-col">
+                            <label className="mb-1 font-medium text-gray-700">Status</label>
+                            <select name="status" value={formData.status} onChange={handleChange} className={inputModern(!!errors.status)}>
+                                <option value="">Selecione o status</option>
+                                <option value="disponivel">Disponível</option>
+                                <option value="adotado">Adotado</option>
+                                <option value="tratamento">Em Tratamento</option>
+                            </select>
+                            {errors.status && <span className={errorStyle}>{errors.status}</span>}
+                        </div>
                     </div>
                 </section>
 
                 <section>
-                    <h2 className="text-lg font-semibold text-gray-700 mb-4">Observações</h2>
-                    <textarea
-                        rows={4}
-                        name="notes"
-                        placeholder="Escreva detalhes adicionais..."
-                        value={formData.notes}
-                        onChange={handleChange}
-                        className={`${inputModern} resize-none`}
-                    />
+                    <div className="flex flex-col">
+                        <label className="text-lg font-semibold text-gray-700 mb-2">Observações</label>
+                        <textarea
+                            rows={4}
+                            name="notes"
+                            value={formData.notes}
+                            onChange={handleChange}
+                            className={inputModern(!!errors.notes) + " resize-none"}
+                        />
+                        {errors.notes && <span className={errorStyle}>{errors.notes}</span>}
+                    </div>
                 </section>
 
-                <div className="flex justify-center">
+                <div className="flex flex-col items-center">
                     <label
                         className={`cursor-pointer flex flex-col items-center justify-center w-40 sm:w-48 h-32 sm:h-36 rounded-2xl
-                ${preview ? "border-0" : "border-2 border-dashed border-blue-400"}
-                bg-blue-50 hover:bg-blue-100 transition relative overflow-hidden`}
+                        ${preview ? "border-0" : "border-2 border-dashed border-blue-400"}
+                        bg-blue-50 hover:bg-blue-100 transition relative overflow-hidden`}
                     >
                         {preview ? (
                             <img src={preview} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
