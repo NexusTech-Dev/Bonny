@@ -1,11 +1,13 @@
 import { useState, useEffect } from "react";
 import { Plus, X, Trash2 } from "lucide-react";
 import {useNavigate} from "react-router-dom";
+import { getAnimals, deleteAnimalById } from "../services/animalService";
+import toast from "react-hot-toast";
 
-type Animal = {
-    id: number;
+export type Animal = {
+    id: string;
     name: string;
-    age: string;
+    birthDate?: string;
     breed: string;
     status: "Disponível" | "Adotado" | "Em tratamento";
     image?: string;
@@ -19,16 +21,18 @@ export default function AnimalList() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        setTimeout(() => {
-            setAnimals([
-                { id: 1, name: "Lilica", age: "2 anos", breed: "Poodle", status: "Disponível" },
-                { id: 2, name: "Rex", age: "3 anos", breed: "Vira-lata", status: "Adotado" },
-                { id: 3, name: "Bolt", age: "1 ano", breed: "Labrador", status: "Em tratamento" },
-                { id: 4, name: "Mia", age: "4 anos", breed: "Siamês", status: "Disponível" },
-                { id: 5, name: "Thor", age: "5 anos", breed: "Pastor Alemão", status: "Disponível" },
-            ]);
-            setLoading(false);
-        }, 1000);
+        const fetchData = async () => {
+            try {
+                const data = await getAnimals();
+                setAnimals(data as Animal[]);
+            } catch (error) {
+                console.error("Erro ao buscar animais:", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchData();
     }, []);
 
     const getStatusStyle = (status: Animal["status"]) => {
@@ -39,13 +43,26 @@ export default function AnimalList() {
         }
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = async () => {
         if (deleteAnimal) {
-            setAnimals(prev => prev.filter(a => a.id !== deleteAnimal.id));
-            if (selectedAnimal?.id === deleteAnimal.id) setSelectedAnimal(null);
+            await deleteAnimalById(deleteAnimal.id);
+            setAnimals((prev) => prev.filter((a) => a.id !== deleteAnimal.id));
             setDeleteAnimal(null);
+            toast.success("Animal removido com sucesso!");
         }
     };
+
+    function calcularIdade(birthDate?: string): string {
+        if (!birthDate) return "Não informado";
+        const nascimento = new Date(birthDate);
+        const hoje = new Date();
+        let idade = hoje.getFullYear() - nascimento.getFullYear();
+        const m = hoje.getMonth() - nascimento.getMonth();
+        if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) {
+            idade--;
+        }
+        return `${idade} ano${idade !== 1 ? "s" : ""}`;
+    }
 
     return (
         <div className="p-6 flex flex-col gap-6">
@@ -115,8 +132,9 @@ export default function AnimalList() {
                                             {animal.status}
                                         </span>
                                     </div>
-                                    <p className="text-sm text-gray-600">{animal.age} • {animal.breed}</p>
-                                    <button
+                                    <p className="text-sm text-gray-600">
+                                        {calcularIdade(animal.birthDate)} • {animal.breed}
+                                    </p>                                    <button
                                         onClick={() => setSelectedAnimal(animal)}
                                         className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
                                     >
@@ -162,7 +180,7 @@ export default function AnimalList() {
                         </div>
 
                         <h2 className="text-xl font-bold text-gray-800 mb-2">{selectedAnimal.name}</h2>
-                        <p className="text-gray-600 mb-1"><strong>Idade:</strong> {selectedAnimal.age}</p>
+                        <p className="text-gray-600 mb-1"><strong>Idade:</strong> {calcularIdade(selectedAnimal.birthDate)}</p>
                         <p className="text-gray-600 mb-1"><strong>Raça:</strong> {selectedAnimal.breed}</p>
                         <p className="text-gray-600 mb-1">
                             <strong>Status:</strong>{" "}

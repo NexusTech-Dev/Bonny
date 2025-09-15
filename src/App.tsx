@@ -9,7 +9,8 @@ import AdoptionRegister from "./pages/AdoptionRegister.tsx";
 import Login from "./pages/Login.tsx";
 import PrivateRoute from "./routes/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
-import type {JSX} from "react";
+import { Toaster } from "react-hot-toast"; // <-- import do Toaster
+import type { JSX } from "react";
 
 const ProtectedLayout = ({ children }: { children: JSX.Element }) => (
     <div className="flex h-screen bg-gray-100">
@@ -21,6 +22,8 @@ const ProtectedLayout = ({ children }: { children: JSX.Element }) => (
 export default function App() {
     return (
         <AuthProvider>
+            <Toaster position="top-right" reverseOrder={false} />
+
             <Router>
                 <Routes>
                     <Route path="/login" element={<Login />} />
