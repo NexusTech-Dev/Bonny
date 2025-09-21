@@ -1,13 +1,13 @@
-import React, { useState, useEffect, type ChangeEvent } from "react";
-import { motion } from "framer-motion";
-import { UserCheck, Save, Upload } from "lucide-react";
-import { useNavigate, useParams } from "react-router-dom";
+import React, {useState, useEffect, type ChangeEvent} from "react";
+import {motion} from "framer-motion";
+import {UserCheck, Save, Upload} from "lucide-react";
+import {useNavigate, useParams} from "react-router-dom";
 import toast from "react-hot-toast";
-import { registerStaff, getStaff, updateStaffById } from "../services/staffService";
+import {registerStaff, getStaff, updateStaffById} from "../services/staffService";
 
 export default function StaffRegister() {
     const navigate = useNavigate();
-    const { id } = useParams<{ id: string }>();
+    const {id} = useParams<{ id: string }>();
     const [loading, setLoading] = useState(false);
     const [preview, setPreview] = useState<string | null>(null);
     const [imageFile, setImageFile] = useState<File | null>(null);
@@ -31,7 +31,10 @@ export default function StaffRegister() {
         try {
             const staffList = await getStaff();
             const staff = staffList.find((s) => s.id === id);
-            if (!staff) throw new Error("Funcionário não encontrado");
+            if (!staff) {
+                toast.error("Funcionário não encontrado");
+                return;
+            }
             setFormData({
                 name: staff.name,
                 email: staff.email,
@@ -51,9 +54,9 @@ export default function StaffRegister() {
     const handleChange = (
         e: ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
-        const { name, value } = e.target;
-        setFormData({ ...formData, [name]: value });
-        setErrors({ ...errors, [name]: "" });
+        const {name, value} = e.target;
+        setFormData({...formData, [name]: value});
+        setErrors({...errors, [name]: ""});
     };
 
     const handleImageChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -61,7 +64,7 @@ export default function StaffRegister() {
         if (file) {
             setPreview(URL.createObjectURL(file));
             setImageFile(file);
-            setErrors({ ...errors, image: "" });
+            setErrors({...errors, image: ""});
         }
     };
 
@@ -115,19 +118,19 @@ export default function StaffRegister() {
     return (
         <div className="min-h-screen flex flex-col items-center px-4 py-10 bg-gray-100">
             <motion.h1
-                initial={{ opacity: 0, y: -20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6 }}
+                initial={{opacity: 0, y: -20}}
+                animate={{opacity: 1, y: 0}}
+                transition={{duration: 0.6}}
                 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-10 flex items-center gap-2 text-center"
             >
-                <UserCheck className="w-7 h-7 md:w-8 md:h-8 text-green-600" /> Cadastro de Funcionários
+                <UserCheck className="w-7 h-7 md:w-8 md:h-8 text-green-600"/> Cadastro de Funcionários
             </motion.h1>
 
             <motion.form
                 onSubmit={handleSubmit}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ duration: 0.6 }}
+                initial={{opacity: 0, scale: 0.95}}
+                animate={{opacity: 1, scale: 1}}
+                transition={{duration: 0.6}}
                 className="bg-white w-full max-w-5xl rounded-3xl shadow-xl p-6 md:p-10 space-y-8"
             >
                 <section>
@@ -135,17 +138,20 @@ export default function StaffRegister() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Nome</label>
-                            <input type="text" name="name" value={formData.name} onChange={handleChange} className={inputModern(!!errors.name)} />
+                            <input type="text" name="name" value={formData.name} onChange={handleChange}
+                                   className={inputModern(!!errors.name)}/>
                             {errors.name && <span className={errorStyle}>{errors.name}</span>}
                         </div>
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">E-mail</label>
-                            <input type="email" name="email" value={formData.email} onChange={handleChange} className={inputModern(!!errors.email)} />
+                            <input type="email" name="email" value={formData.email} onChange={handleChange}
+                                   className={inputModern(!!errors.email)}/>
                             {errors.email && <span className={errorStyle}>{errors.email}</span>}
                         </div>
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Telefone</label>
-                            <input type="tel" name="phone" value={formData.phone} onChange={handleChange} className={inputModern(!!errors.phone)} />
+                            <input type="tel" name="phone" value={formData.phone} onChange={handleChange}
+                                   className={inputModern(!!errors.phone)}/>
                             {errors.phone && <span className={errorStyle}>{errors.phone}</span>}
                         </div>
 
@@ -167,7 +173,8 @@ export default function StaffRegister() {
 
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Cargo</label>
-                            <select name="role" value={formData.role} onChange={handleChange} className={inputModern(!!errors.role)}>
+                            <select name="role" value={formData.role} onChange={handleChange}
+                                    className={inputModern(!!errors.role)}>
                                 <option value="">Selecione o cargo</option>
                                 {roles.map((role) => (
                                     <option key={role} value={role}>{role}</option>
@@ -199,20 +206,20 @@ export default function StaffRegister() {
                         bg-green-50 hover:bg-green-100 transition relative overflow-hidden`}
                     >
                         {preview ? (
-                            <img src={preview} alt="Preview" className="w-full h-full object-cover rounded-2xl" />
+                            <img src={preview} alt="Preview" className="w-full h-full object-cover rounded-2xl"/>
                         ) : (
                             <div className="flex flex-col items-center">
-                                <Upload className="w-7 h-7 text-green-500 mb-2" />
+                                <Upload className="w-7 h-7 text-green-500 mb-2"/>
                                 <span className="text-xs sm:text-sm text-green-600 font-medium">Adicionar imagem</span>
                             </div>
                         )}
-                        <input type="file" accept="image/*" className="hidden" onChange={handleImageChange} />
+                        <input type="file" accept="image/*" className="hidden" onChange={handleImageChange}/>
                     </label>
                 </div>
 
                 <div className="flex flex-col sm:flex-row justify-between gap-4">
                     <motion.button
-                        whileTap={{ scale: 0.95 }}
+                        whileTap={{scale: 0.95}}
                         type="button"
                         onClick={() => navigate("/staffList")}
                         className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gray-600 text-white shadow hover:bg-gray-700 transition font-medium"
@@ -221,12 +228,12 @@ export default function StaffRegister() {
                     </motion.button>
 
                     <motion.button
-                        whileTap={{ scale: 0.95 }}
+                        whileTap={{scale: 0.95}}
                         type="submit"
                         disabled={loading}
                         className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-700 text-white px-8 py-3 rounded-2xl shadow-lg hover:from-green-600 hover:to-green-800 transition font-medium"
                     >
-                        {loading ? "Salvando..." : <><Save className="w-5 h-5" /> Cadastrar</>}
+                        {loading ? "Salvando..." : <><Save className="w-5 h-5"/> Cadastrar</>}
                     </motion.button>
                 </div>
             </motion.form>
