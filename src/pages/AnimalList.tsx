@@ -131,7 +131,7 @@ export default function AnimalList() {
                     />
                     <button
                         className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition shadow"
-                        onClick={() => navigate("/animalRegister")}
+                        onClick={() => navigate("/animals")}
                     >
                         <Plus size={18} /> <span className="hidden sm:inline">Cadastrar</span>
                     </button>

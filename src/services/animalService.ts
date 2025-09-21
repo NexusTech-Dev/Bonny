@@ -1,5 +1,5 @@
-import { db } from "../lib/firebase.ts";
-import { collection, addDoc, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import {db} from "../lib/firebase.ts";
+import {addDoc, collection, deleteDoc, doc, getDocs, updateDoc} from "firebase/firestore";
 import type {Animal} from "../pages/AnimalList.tsx";
 
 const animalsCollection = collection(db, "animals");
@@ -59,8 +59,7 @@ export async function updateAnimalById(id: string, data: any, imageFile?: File) 
     let updateData = { ...data };
 
     if (imageFile) {
-        const imageBase64 = await fileToBase64(imageFile);
-        updateData.image = imageBase64;
+        updateData.image = await fileToBase64(imageFile);
     }
 
     await updateDoc(docRef, updateData);
