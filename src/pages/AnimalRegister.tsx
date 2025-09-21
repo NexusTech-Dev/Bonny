@@ -180,9 +180,9 @@ export default function AnimalRegister() {
                             <label className="mb-1 font-medium text-gray-700">Status</label>
                             <select name="status" value={formData.status} onChange={handleChange} className={inputModern(!!errors.status)}>
                                 <option value="">Selecione o status</option>
-                                <option value="disponivel">Disponível</option>
-                                <option value="adotado">Adotado</option>
-                                <option value="tratamento">Em Tratamento</option>
+                                <option value="Disponível">Disponível</option>
+                                <option value="Adotado">Adotado</option>
+                                <option value="Em tratamento">Em tratamento</option>
                             </select>
                             {errors.status && <span className={errorStyle}>{errors.status}</span>}
                         </div>
