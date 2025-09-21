@@ -11,6 +11,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast"; // <-- import do Toaster
 import type { JSX } from "react";
+import StaffList from "./pages/StaffList.tsx";
 
 const ProtectedLayout = ({ children }: { children: JSX.Element }) => (
     <div className="flex h-screen bg-gray-100">
@@ -74,6 +75,16 @@ export default function App() {
                             <PrivateRoute>
                                 <ProtectedLayout>
                                     <StaffRegister />
+                                </ProtectedLayout>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/staffList"
+                        element={
+                            <PrivateRoute>
+                                <ProtectedLayout>
+                                    <StaffList />
                                 </ProtectedLayout>
                             </PrivateRoute>
                         }
