@@ -20,7 +20,7 @@ O objetivo do projeto é centralizar informações e tornar o processo de adoç�
 
 * **Frontend:** React + Tailwind CSS
 * **Backend:** Node.js / TypeScript (em desenvolvimento)
-* **Banco de Dados:** MySQL
+* **Banco de Dados:** Firebase
 
 ---
 
