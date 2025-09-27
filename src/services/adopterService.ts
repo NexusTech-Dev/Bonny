@@ -51,7 +51,7 @@ export async function updateAdopterById(id: string, data: Partial<Adopter>) {
     const docRef = doc(db, "adopters", id);
     await updateDoc(docRef, {
         ...data,
-        hasPets: data.hasPets !== undefined ? data.hasPets : undefined, // boolean seguro
+        hasPets: data.hasPets !== undefined ? data.hasPets : undefined,
     });
 }
 
