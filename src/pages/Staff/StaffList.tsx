@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { getStaff, deleteStaffById, updateStaffById } from "../services/staffService";
+import { getStaff, deleteStaffById, updateStaffById } from "../../services/staffService.ts";
 import { motion, AnimatePresence } from "framer-motion";
 
 export type Staff = {

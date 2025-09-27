@@ -1,6 +1,6 @@
 import {db} from "../lib/firebase.ts";
 import {addDoc, collection, deleteDoc, doc, getDocs, updateDoc} from "firebase/firestore";
-import type {Animal} from "../pages/AnimalList.tsx";
+import type {Animal} from "../pages/Animal/AnimalList.tsx";
 
 const animalsCollection = collection(db, "animals");
 

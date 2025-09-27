@@ -8,7 +8,7 @@ import {
     updateDoc,
     type DocumentData,
 } from "firebase/firestore";
-import type { Staff } from "../pages/StaffList.tsx";
+import type { Staff } from "../pages/Staff/StaffList.tsx";
 
 const staffCollection = collection(db, "staff");
 
