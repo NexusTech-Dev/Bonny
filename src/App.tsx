@@ -12,6 +12,9 @@ import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast"; // <-- import do Toaster
 import type { JSX } from "react";
 import StaffList from "./pages/Staff/StaffList.tsx";
+import AdopterRegister from "./pages/Adopter/AdopterRegister.tsx";
+import AdopterList from "./pages/Adopter/AdopterList.tsx";
+
 
 const ProtectedLayout = ({ children }: { children: JSX.Element }) => (
     <div className="flex h-screen bg-gray-100">
@@ -85,6 +88,26 @@ export default function App() {
                             <PrivateRoute>
                                 <ProtectedLayout>
                                     <StaffList />
+                                </ProtectedLayout>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/Adopter"
+                        element={
+                            <PrivateRoute>
+                                <ProtectedLayout>
+                                    <AdopterRegister />
+                                </ProtectedLayout>
+                            </PrivateRoute>
+                        }
+                    />
+                    <Route
+                        path="/AdopterList"
+                        element={
+                            <PrivateRoute>
+                                <ProtectedLayout>
+                                    <AdopterList />
                                 </ProtectedLayout>
                             </PrivateRoute>
                         }
