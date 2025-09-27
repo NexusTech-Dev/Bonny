@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { PawPrint, User, FileText, Heart, Calendar, AlertCircle } from "lucide-react";
 import { getAnimals } from "../services/animalService";
+import { getStaff } from "../services/staffService.ts";
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar,
 } from "recharts";
@@ -15,8 +16,19 @@ interface Animal {
     needsCheckup?: boolean;
 }
 
+export interface Staff {
+    id: string;
+    name: string;
+    role: string;
+    email: string;
+    phone?: string;
+    image?: string;
+    createdAt?: Date;
+}
+
 export default function Dashboard() {
     const [animals, setAnimals] = useState<Animal[]>([]);
+    const [staff, setStaff] = useState<Staff[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -34,9 +46,24 @@ export default function Dashboard() {
         fetchData();
     }, []);
 
+    useEffect(() => {
+        async function fetchData() {
+            setLoading(true);
+            try {
+                const staffData = await getStaff();
+                setStaff(staffData);
+            } catch (err) {
+                console.error(err);
+            } finally {
+                setLoading(false);
+            }
+        }
+        fetchData();
+    }, []);
+
     const stats = [
         { id: 1, label: "Total de Animais", value: animals.length, icon: PawPrint, color: "bg-blue-100 text-blue-800" },
-        { id: 2, label: "Funcionários", value: 12, icon: User, color: "bg-green-100 text-green-800" },
+        { id: 2, label: "Funcionários", value: staff.length, icon: User, color: "bg-green-100 text-green-800" },
         { id: 3, label: "Adoções", value: animals.filter(a => a.status === "Adotado").length, icon: FileText, color: "bg-yellow-100 text-yellow-800" },
         { id: 4, label: "Animais aguardando adoção", value: animals.filter(a => a.status === "Disponível").length, icon: Heart, color: "bg-pink-100 text-pink-800" },
         { id: 5, label: "Cadastros este mês", value: 15, icon: Calendar, color: "bg-purple-100 text-purple-800" },

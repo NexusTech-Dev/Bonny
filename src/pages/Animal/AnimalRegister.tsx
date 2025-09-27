@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { motion } from "framer-motion";
 import { PawPrint, Save, Upload } from "lucide-react";
 import { useNavigate } from "react-router-dom";
-import { registerAnimal } from "../services/animalService";
+import { registerAnimal } from "../../services/animalService.ts";
 import toast from "react-hot-toast";
 
 export default function AnimalRegister() {

@@ -1,8 +1,8 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Sidebar from "./Components/Sidebar/Sidebar.tsx";
-import AnimalRegister from "./pages/AnimalRegister";
-import AnimalList from "./pages/AnimalList.tsx";
-import StaffRegister from "./pages/StaffRegister";
+import AnimalRegister from "./pages/Animal/AnimalRegister.tsx";
+import AnimalList from "./pages/Animal/AnimalList.tsx";
+import StaffRegister from "./pages/Staff/StaffRegister.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
 import VaccineRegister from "./pages/VaccineRegister.tsx";
 import AdoptionRegister from "./pages/AdoptionRegister.tsx";
@@ -11,7 +11,7 @@ import PrivateRoute from "./routes/PrivateRoute";
 import { AuthProvider } from "./context/AuthContext";
 import { Toaster } from "react-hot-toast"; // <-- import do Toaster
 import type { JSX } from "react";
-import StaffList from "./pages/StaffList.tsx";
+import StaffList from "./pages/Staff/StaffList.tsx";
 
 const ProtectedLayout = ({ children }: { children: JSX.Element }) => (
     <div className="flex h-screen bg-gray-100">

@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { getAnimals, deleteAnimalById, updateAnimalById } from "../services/animalService";
+import { getAnimals, deleteAnimalById, updateAnimalById } from "../../services/animalService.ts";
 import { motion, AnimatePresence } from "framer-motion";
 
 export type Animal = {

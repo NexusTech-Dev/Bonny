@@ -3,7 +3,7 @@ import {motion} from "framer-motion";
 import {UserCheck, Save, Upload} from "lucide-react";
 import {useNavigate, useParams} from "react-router-dom";
 import toast from "react-hot-toast";
-import {registerStaff, getStaff, updateStaffById} from "../services/staffService";
+import {registerStaff, getStaff, updateStaffById} from "../../services/staffService.ts";
 
 export default function StaffRegister() {
     const navigate = useNavigate();
