@@ -7,6 +7,7 @@ import {
     X,
     LogOut,
     PawPrint,
+    HeartHandshake,
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,6 +22,7 @@ function SideBar() {
         { id: "dashboard", label: "Dashboard", icon: LayoutDashboard, href: "/dashboard" },
         { id: "animals", label: "Animais", icon: PawPrint, href: "/animals" },
         { id: "staff", label: "Funcionários", icon: Briefcase, href: "/staff" },
+        { id: "adopter", label: "Adotantes", icon: HeartHandshake, href: "/adopter" },
         { id: "vaccines", label: "Vacinas", icon: Archive, href: "/vaccines" },
         { id: "adoptions", label: "Adoções", icon: FileText, href: "/adoptions" },
     ];
