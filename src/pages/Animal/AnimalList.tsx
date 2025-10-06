@@ -39,12 +39,28 @@ export default function AnimalList() {
 
     const calcularIdade = (birthDate?: string) => {
         if (!birthDate) return "Não informado";
+
         const nascimento = new Date(birthDate);
         const hoje = new Date();
-        let idade = hoje.getFullYear() - nascimento.getFullYear();
-        const m = hoje.getMonth() - nascimento.getMonth();
-        if (m < 0 || (m === 0 && hoje.getDate() < nascimento.getDate())) idade--;
-        return `${idade} ano${idade !== 1 ? "s" : ""}`;
+
+        let anos = hoje.getFullYear() - nascimento.getFullYear();
+        let meses = hoje.getMonth() - nascimento.getMonth();
+        let dias = hoje.getDate() - nascimento.getDate();
+
+        if (dias < 0) {
+            meses--;
+            const ultimoDiaMesAnterior = new Date(hoje.getFullYear(), hoje.getMonth(), 0).getDate();
+            dias += ultimoDiaMesAnterior;
+        }
+
+        if (meses < 0) {
+            anos--;
+            meses += 12;
+        }
+
+        if (anos > 0) return `${anos} ano${anos !== 1 ? "s" : ""}`;
+        if (meses > 0) return `${meses} mês${meses !== 1 ? "es" : ""}`;
+        return `${dias} dia${dias !== 1 ? "s" : ""}`;
     };
 
     const inputStyle = (error?: boolean) =>
@@ -161,7 +177,6 @@ export default function AnimalList() {
                 </div>
             )}
 
-            {/* Modal de Edição */}
             <AnimatePresence>
                 {editForm && (
                     <motion.div
@@ -309,10 +324,19 @@ export default function AnimalList() {
                 )}
             </AnimatePresence>
 
-            {/* Modal de Exclusão */}
             {deleteAnimal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-scaleIn">
+                <motion.div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                >
+                    <motion.div
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative overflow-hidden"
+                        initial={{ scale: 0.9 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0.9 }}
+                    >
                         <h2 className="text-lg font-bold text-gray-800 mb-4">Confirmar exclusão</h2>
                         <p className="text-gray-600 mb-6">
                             Deseja realmente excluir <strong>{deleteAnimal.name}</strong>?
@@ -331,8 +355,8 @@ export default function AnimalList() {
                                 Excluir
                             </button>
                         </div>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             )}
         </div>
     );

@@ -16,6 +16,7 @@ import {AuthProvider} from "./context/AuthContext";
 import {Toaster} from "react-hot-toast";
 import type {JSX} from "react";
 import {AnimalsProvider} from "./context/AnimalsContext.tsx";
+import { AdoptionsProvider } from "./context/AdoptionsContext";
 
 const ProtectedLayout = ({children}: { children: JSX.Element }) => (
     <div className="flex h-screen bg-gray-100">
@@ -34,32 +35,34 @@ export default function App() {
     return (
         <AuthProvider>
             <AnimalsProvider>
-                <Toaster position="top-right" reverseOrder={false}/>
+                <AdoptionsProvider>
+                    <Toaster position="top-right" reverseOrder={false}/>
 
-                <Router>
-                    <Routes>
-                        <Route path="/login" element={<Login/>}/>
+                    <Router>
+                        <Routes>
+                            <Route path="/login" element={<Login/>}/>
 
-                        <Route path="/" element={<ProtectedRoute element={<Dashboard/>}/>}/>
-                        <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard/>}/>}/>
+                            <Route path="/" element={<ProtectedRoute element={<Dashboard/>}/>}/>
+                            <Route path="/dashboard" element={<ProtectedRoute element={<Dashboard/>}/>}/>
 
-                        <Route path="/animals" element={<ProtectedRoute element={<AnimalRegister/>}/>}/>
-                        <Route path="/animalList" element={<ProtectedRoute element={<AnimalList/>}/>}/>
+                            <Route path="/animals" element={<ProtectedRoute element={<AnimalRegister/>}/>}/>
+                            <Route path="/animalList" element={<ProtectedRoute element={<AnimalList/>}/>}/>
 
-                        <Route path="/staff" element={<ProtectedRoute element={<StaffRegister/>}/>}/>
-                        <Route path="/staffList" element={<ProtectedRoute element={<StaffList/>}/>}/>
+                            <Route path="/staff" element={<ProtectedRoute element={<StaffRegister/>}/>}/>
+                            <Route path="/staffList" element={<ProtectedRoute element={<StaffList/>}/>}/>
 
-                        <Route path="/Adopter" element={<ProtectedRoute element={<AdopterRegister/>}/>}/>
-                        <Route path="/AdopterList" element={<ProtectedRoute element={<AdopterList/>}/>}/>
+                            <Route path="/Adopter" element={<ProtectedRoute element={<AdopterRegister/>}/>}/>
+                            <Route path="/AdopterList" element={<ProtectedRoute element={<AdopterList/>}/>}/>
 
-                        <Route path="/vaccines" element={<ProtectedRoute element={<VaccineRegister/>}/>}/>
+                            <Route path="/vaccines" element={<ProtectedRoute element={<VaccineRegister/>}/>}/>
 
-                        <Route path="/adoptions" element={<ProtectedRoute element={<AdoptionRegister/>}/>}/>
-                        <Route path="/AdoptionList" element={<ProtectedRoute element={<AdoptionList/>}/>}/>
+                            <Route path="/adoptions" element={<ProtectedRoute element={<AdoptionRegister/>}/>}/>
+                            <Route path="/AdoptionList" element={<ProtectedRoute element={<AdoptionList/>}/>}/>
 
-                        <Route path="*" element={<ProtectedRoute element={<Dashboard/>}/>}/>
-                    </Routes>
-                </Router>
+                            <Route path="*" element={<ProtectedRoute element={<Dashboard/>}/>}/>
+                        </Routes>
+                    </Router>
+                </AdoptionsProvider>
             </AnimalsProvider>
         </AuthProvider>
     );
