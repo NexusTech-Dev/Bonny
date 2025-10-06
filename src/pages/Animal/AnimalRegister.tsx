@@ -46,7 +46,9 @@ export default function AnimalRegister() {
     const validate = () => {
         const newErrors: { [key: string]: string } = {};
         Object.entries(formData).forEach(([key, value]) => {
-            if (!value) newErrors[key] = "Campo obrigatório";
+            if (key !== "notes" && !value) {
+                newErrors[key] = "Campo obrigatório";
+            }
         });
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
