@@ -67,7 +67,7 @@ export default function Dashboard() {
 
         if (input instanceof Date) return input;
 
-        if (typeof input === "object" && input?.toDate instanceof Function)
+        if (typeof input === "object")
             return input.toDate();
 
         if (typeof input === "string") return new Date(input);
