@@ -15,6 +15,9 @@ export type Animal = {
     notes?: string;
     image?: string;
     birthDate?: string;
+    needsVaccine?: boolean;
+    needsCheckup?: boolean;
+    adoptionDate?: string;
 };
 
 type AnimalsContextType = {

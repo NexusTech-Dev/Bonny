@@ -6,6 +6,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useAnimals } from "../../context/AnimalsContext";
 import { deleteAdoptionById, getAdoptions, updateAdoption } from "../../services/adoptionService.ts";
 import EditAdoptionForm from "../../Components/EditAdoptionForm/EditAdoptionForm.tsx";
+import {getAdopters} from "../../services/adopterService.ts";
+import {getStaff} from "../../services/staffService.ts";
 
 export type Adoption = {
     id: string;
@@ -39,17 +41,26 @@ export default function AdoptionList() {
         const fetchAdoptions = async () => {
             setLoading(true);
             try {
-                const rawAdoptions = await getAdoptions();
+                const [rawAdoptions, adopters, employees] = await Promise.all([
+                    getAdoptions(),
+                    getAdopters(),
+                    getStaff()
+                ]);
+
                 const formatted = rawAdoptions.map(a => {
                     const animal = animals.find(an => an.id === a.animalId);
+                    const adopter = adopters.find(ad => ad.id === a.adopterId);
+                    const employee = employees.find(emp => emp.id === a.employeeId);
+
                     return {
                         ...a,
                         animalName: animal?.name ?? "Desconhecido",
-                        adopterName: "Desconhecido",
-                        employeeName: "Desconhecido",
+                        adopterName: adopter?.name ?? "Desconhecido",
+                        employeeName: employee?.name ?? "Desconhecido",
                         status: a.status
                     };
                 });
+
                 setAdoptions(formatted);
             } catch (err) {
                 console.error(err);

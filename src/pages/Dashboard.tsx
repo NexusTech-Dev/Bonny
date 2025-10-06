@@ -6,15 +6,7 @@ import { getStaff } from "../services/staffService.ts";
 import {
     LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar,
 } from "recharts";
-
-interface Animal {
-    id: string;
-    name: string;
-    breed: string;
-    status: "Disponível" | "Adotado" | "Em tratamento";
-    needsVaccine?: boolean;
-    needsCheckup?: boolean;
-}
+import type { Animal } from "../context/AnimalsContext";
 
 export interface Staff {
     id: string;
@@ -35,22 +27,11 @@ export default function Dashboard() {
         async function fetchData() {
             setLoading(true);
             try {
-                const animalsData = await getAnimals();
+                const [animalsData, staffData] = await Promise.all([
+                    getAnimals(),
+                    getStaff()
+                ]);
                 setAnimals(animalsData);
-            } catch (err) {
-                console.error(err);
-            } finally {
-                setLoading(false);
-            }
-        }
-        fetchData();
-    }, []);
-
-    useEffect(() => {
-        async function fetchData() {
-            setLoading(true);
-            try {
-                const staffData = await getStaff();
                 setStaff(staffData);
             } catch (err) {
                 console.error(err);
@@ -58,30 +39,71 @@ export default function Dashboard() {
                 setLoading(false);
             }
         }
+
         fetchData();
     }, []);
 
     const stats = [
-        { id: 1, label: "Total de Animais", value: animals.length, icon: PawPrint, color: "bg-blue-100 text-blue-800" },
-        { id: 2, label: "Funcionários", value: staff.length, icon: User, color: "bg-green-100 text-green-800" },
-        { id: 3, label: "Adoções", value: animals.filter(a => a.status === "Adotado").length, icon: FileText, color: "bg-yellow-100 text-yellow-800" },
-        { id: 4, label: "Animais aguardando adoção", value: animals.filter(a => a.status === "Disponível").length, icon: Heart, color: "bg-pink-100 text-pink-800" },
-        { id: 5, label: "Cadastros este mês", value: 15, icon: Calendar, color: "bg-purple-100 text-purple-800" },
+        {
+            id: 1,
+            label: "Total de Animais",
+            value: animals.length,
+            icon: PawPrint,
+            color: "bg-blue-100 text-blue-800"
+        },
+        {
+            id: 2,
+            label: "Funcionários",
+            value: staff.length,
+            icon: User,
+            color: "bg-green-100 text-green-800"
+        },
+        {
+            id: 3,
+            label: "Adoções",
+            value: animals.filter(a => a.status === "Adotado").length,
+            icon: FileText,
+            color: "bg-yellow-100 text-yellow-800"
+        },
+        {
+            id: 4,
+            label: "Animais aguardando adoção",
+            value: animals.filter(a => a.status === "Disponível").length,
+            icon: Heart,
+            color: "bg-pink-100 text-pink-800"
+        },
+        {
+            id: 5,
+            label: "Cadastros este mês",
+            value: 15,
+            icon: Calendar,
+            color: "bg-purple-100 text-purple-800"
+        },
     ];
 
     const alerts = [
-        { id: 1, message: `${animals.filter(a => a.needsVaccine).length} animais precisam de vacinação`, color: "red" },
-        { id: 2, message: `${animals.filter(a => a.needsCheckup).length} animais precisam de checkup`, color: "yellow" },
+        {
+            id: 1,
+            message: `${animals.filter(a => a.needsVaccine).length} animais precisam de vacinação`,
+            color: "red"
+        },
+        {
+            id: 2,
+            message: `${animals.filter(a => a.needsCheckup).length} animais precisam de checkup`,
+            color: "yellow"
+        },
     ];
 
-    const adoptionData = [
-        { month: "Jan", adoptions: 4 },
-        { month: "Fev", adoptions: 6 },
-        { month: "Mar", adoptions: 8 },
-        { month: "Abr", adoptions: 5 },
-        { month: "Mai", adoptions: 10 },
-        { month: "Jun", adoptions: 7 },
-    ];
+    const months = ["Jan", "Fev", "Mar", "Abr", "Mai", "Jun", "Jul", "Ago", "Set", "Out", "Nov", "Dez"];
+
+    const adoptionData = months.map((month, index) => {
+        const count = animals.filter(a => {
+            if (a.status !== "Adotado" || !a.adoptionDate) return false;
+            const adoptionMonth = new Date(a.adoptionDate).getMonth();
+            return adoptionMonth === index;
+        }).length;
+        return { month, adoptions: count };
+    });
 
     const registrationData = [
         { month: "Jan", registrations: 3 },
@@ -132,20 +154,26 @@ export default function Dashboard() {
                 <div className="p-6 bg-white shadow rounded-2xl">
                     <h2 className="text-xl font-semibold mb-4">Adoções nos últimos meses</h2>
                     <ResponsiveContainer width="100%" height={250}>
-                        <LineChart data={adoptionData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
-                            <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                            <XAxis dataKey="month" stroke="#6b7280" />
-                            <YAxis stroke="#6b7280" />
-                            <Tooltip />
-                            <Line type="monotone" dataKey="adoptions" stroke="#3b82f6" strokeWidth={2} />
-                        </LineChart>
+                        {adoptionData.some(d => d.adoptions > 0) ? (
+                            <LineChart data={adoptionData}>
+                                <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
+                                <XAxis dataKey="month" stroke="#6b7280" />
+                                <YAxis stroke="#6b7280" />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="adoptions" stroke="#3b82f6" strokeWidth={2} />
+                            </LineChart>
+                        ) : (
+                            <div className="flex items-center justify-center h-full text-gray-500">
+                                Nenhum dado de adoção disponível
+                            </div>
+                        )}
                     </ResponsiveContainer>
                 </div>
 
                 <div className="p-6 bg-white shadow rounded-2xl">
                     <h2 className="text-xl font-semibold mb-4">Cadastros nos últimos meses</h2>
                     <ResponsiveContainer width="100%" height={250}>
-                        <BarChart data={registrationData} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                        <BarChart data={registrationData}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
                             <XAxis dataKey="month" stroke="#6b7280" />
                             <YAxis stroke="#6b7280" />
@@ -162,11 +190,11 @@ export default function Dashboard() {
                     <table className="min-w-full bg-white divide-y divide-gray-200">
                         <thead className="bg-gray-50 sticky top-0">
                             <tr>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Nome</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Raça</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Vacina</th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Checkup</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Nome</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Raça</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Vacina</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Checkup</th>
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
@@ -190,7 +218,7 @@ export default function Dashboard() {
                     {alerts.map((alert) => (
                         <div
                             key={alert.id}
-                            className={`flex items-center p-4 bg-${alert.color}-50 text-${alert.color}-800 rounded-xl shadow`}
+                            className={`flex items-center p-4 rounded-xl shadow border-l-4 border-${alert.color}-500 bg-${alert.color}-50 text-${alert.color}-800`}
                         >
                             <AlertCircle className="w-6 h-6 mr-2" />
                             {alert.message}

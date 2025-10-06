@@ -204,7 +204,7 @@ export default function AnimalList() {
                                             {field.type === "select" ? (
                                                 <select
                                                     name={field.name}
-                                                    value={editForm[field.name as keyof Animal] || ""}
+                                                    value={String(editForm[field.name as keyof Animal] ?? "")}
                                                     onChange={handleEditChange}
                                                     className={inputStyle()}
                                                 >
@@ -215,7 +215,7 @@ export default function AnimalList() {
                                                 <input
                                                     type={field.type}
                                                     name={field.name}
-                                                    value={editForm[field.name as keyof Animal] || ""}
+                                                    value={String(editForm[field.name as keyof Animal] ?? "")}
                                                     onChange={handleEditChange}
                                                     className={inputStyle()}
                                                 />
