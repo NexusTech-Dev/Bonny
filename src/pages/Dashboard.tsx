@@ -181,7 +181,7 @@ export default function Dashboard() {
     });
 
     return (
-        <div className="min-h-screen p-6 bg-gray-50">
+        <div className="min-h-screen p-6">
             <motion.h1
                 initial={{ opacity: 0, y: -15 }}
                 animate={{ opacity: 1, y: 0 }}
