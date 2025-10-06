@@ -5,8 +5,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import {
     registerAdopter,
-    getAdopter,
-    updateAdopterById,
+    getAdopterById,
+    updateAdopterById, getAdopters,
 } from "../../services/adopterService";
 import { formatCPF, formatCEP, formatPhone } from "./formatters.ts"
 
@@ -39,14 +39,16 @@ export default function AdopterRegister() {
     useEffect(() => {
         const fetchAdopters = async () => {
             try {
-                const list = await getAdopter();
+                const list = await getAdopters();
                 setAdopterList(list);
+
                 if (id) {
-                    const adopter = list.find(a => a.id === id);
+                    const adopter = await getAdopterById(id);
                     if (!adopter) {
                         toast.error("Adotante não encontrado");
                         return;
                     }
+
                     setFormData({
                         name: adopter.name,
                         email: adopter.email,
