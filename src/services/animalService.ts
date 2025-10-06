@@ -1,6 +1,6 @@
 import {db} from "../lib/firebase.ts";
 import {addDoc, collection, deleteDoc, doc, getDocs, updateDoc} from "firebase/firestore";
-import type {Animal} from "../pages/Animal/AnimalList.tsx";
+import type {Animal} from "../context/AnimalsContext.tsx";
 
 const animalsCollection = collection(db, "animals");
 
@@ -27,6 +27,18 @@ export async function registerAnimal(data: any, imageFile?: File) {
 
     return docRef.id;
 }
+
+export const updateAnimalStatus = async (id: string, adoptionStatus: string) => {
+    const docRef = doc(db, "animals", id);
+
+    let newStatus = "Disponível";
+
+    if (adoptionStatus === "Em andamento") newStatus = "Pendente";
+    else if (adoptionStatus === "Concluída") newStatus = "Adotado";
+    else if (adoptionStatus === "Devolvido") newStatus = "Disponível";
+
+    await updateDoc(docRef, { status: newStatus, updatedAt: new Date() });
+};
 
 export const getAnimals = async (): Promise<Animal[]> => {
     const snapshot = await getDocs(collection(db, "animals"));

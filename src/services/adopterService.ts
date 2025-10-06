@@ -5,6 +5,7 @@ import {
     deleteDoc,
     doc,
     getDocs,
+    getDoc,
     updateDoc,
     type DocumentData,
 } from "firebase/firestore";
@@ -21,7 +22,7 @@ export async function registerAdopter(data: Omit<Adopter, "id">): Promise<string
     return docRef.id;
 }
 
-export const getAdopter = async (): Promise<Adopter[]> => {
+export const getAdopters = async (): Promise<Adopter[]> => {
     const snapshot = await getDocs(adopterCollection);
     return snapshot.docs.map((docSnap) => {
         const data = docSnap.data() as DocumentData;
@@ -45,6 +46,33 @@ export const getAdopter = async (): Promise<Adopter[]> => {
             hasPets: !!data.hasPets,
         } as Adopter;
     });
+};
+
+export const getAdopterById = async (id: string): Promise<Adopter | null> => {
+    const docRef = doc(db, "adopters", id);
+    const docSnap = await getDoc(docRef);
+    if (!docSnap.exists()) return null;
+
+    const data = docSnap.data() as DocumentData;
+    return {
+        id: docSnap.id,
+        name: data.name || "Sem nome",
+        email: data.email || "",
+        phone: data.phone || "",
+        sex: data.sex || "",
+        notes: data.notes || "",
+        rg: data.rg || "",
+        cpf: data.cpf || "",
+        maritalStatus: data.maritalStatus || "",
+        state: data.state || "",
+        city: data.city || "",
+        district: data.district || "",
+        street: data.street || "",
+        number: data.number || "",
+        complement: data.complement || "",
+        cep: data.cep || "",
+        hasPets: !!data.hasPets,
+    } as Adopter;
 };
 
 export async function updateAdopterById(id: string, data: Partial<Adopter>) {

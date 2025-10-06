@@ -2,7 +2,7 @@ import { useState, useEffect, type ChangeEvent } from "react";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
-import { getAdopter, deleteAdopterById, updateAdopterById } from "../../services/adopterService";
+import { getAdopters, deleteAdopterById, updateAdopterById } from "../../services/adopterService";
 import { motion, AnimatePresence } from "framer-motion";
 import female from "../../assets/images/avatars/female.jpg";
 import male from "../../assets/images/avatars/male.jpg";
@@ -51,7 +51,7 @@ export default function AdopterList() {
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const data = await getAdopter();
+                const data = await getAdopters();
                 setAdopters(data);
             } catch (err) {
                 console.error(err);
@@ -466,7 +466,6 @@ export default function AdopterList() {
                                         </div>
                                     </div>
 
-                                    {/* Observações */}
                                     <div className="flex flex-col sm:col-span-2">
                                         <label className="mb-1 font-medium text-gray-700">Observações</label>
                                         <textarea
@@ -501,7 +500,6 @@ export default function AdopterList() {
                     </motion.div>
                 )}
 
-                {/* Modal de confirmação de exclusão */}
                 {deleteAdopter && (
                     <motion.div
                         className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
