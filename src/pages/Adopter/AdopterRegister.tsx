@@ -176,7 +176,7 @@ export default function AdopterRegister() {
         `w-full px-4 py-3 rounded-xl shadow-sm focus:ring-2 focus:outline-none transition placeholder-gray-400 text-gray-800 ` +
         (error
             ? "border-2 border-red-500 focus:ring-red-500 bg-red-50"
-            : "bg-gray-100/70 focus:ring-green-500");
+            : "bg-gray-100/70 focus:ring-blue-500");
 
     const errorStyle = "text-sm text-red-500 mt-1";
     const ErrorMessage = ({ message }: { message?: string }) =>
@@ -443,7 +443,7 @@ export default function AdopterRegister() {
                         whileTap={{ scale: 0.95 }}
                         type="submit"
                         disabled={loading}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-700 text-white px-8 py-3 rounded-2xl shadow-lg hover:from-green-600 hover:to-green-800 transition font-medium"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-3 rounded-2xl shadow-lg hover:from-blue-600 hover:to-blue-800 transition font-medium"
                     >
                         {loading ? "Salvando..." : <><Save className="w-5 h-5" /> {id ? "Atualizar" : "Cadastrar"}</>}
                     </motion.button>

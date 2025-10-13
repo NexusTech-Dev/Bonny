@@ -106,7 +106,7 @@ export default function StaffRegister() {
         `w-full px-4 py-3 rounded-xl shadow-sm focus:ring-2 focus:outline-none transition placeholder-gray-400 text-gray-800 ` +
         (error
             ? "border-2 border-red-500 focus:ring-red-500 bg-red-50"
-            : "bg-gray-100/70 focus:ring-green-500");
+            : "bg-gray-100/70 focus:ring-blue-500");
 
     const errorStyle = "text-sm text-red-500 mt-1";
 
@@ -209,15 +209,15 @@ export default function StaffRegister() {
                 <div className="flex flex-col items-center">
                     <label
                         className={`cursor-pointer flex flex-col items-center justify-center w-40 sm:w-48 h-32 sm:h-36 rounded-2xl
-                        ${preview ? "border-0" : "border-2 border-dashed border-green-400"}
-                        bg-green-50 hover:bg-green-100 transition relative overflow-hidden`}
+                        ${preview ? "border-0" : "border-2 border-dashed border-blue-400"}
+                        bg-blue-50 hover:bg-blue-100 transition relative overflow-hidden`}
                     >
                         {preview ? (
                             <img src={preview} alt="Preview" className="w-full h-full object-cover rounded-2xl"/>
                         ) : (
                             <div className="flex flex-col items-center">
-                                <Upload className="w-7 h-7 text-green-500 mb-2"/>
-                                <span className="text-xs sm:text-sm text-green-600 font-medium">Adicionar imagem</span>
+                                <Upload className="w-7 h-7 text-blue-500 mb-2"/>
+                                <span className="text-xs sm:text-sm text-blue-600 font-medium">Adicionar imagem</span>
                             </div>
                         )}
                         <input type="file" accept="image/*" className="hidden" onChange={handleImageChange}/>
