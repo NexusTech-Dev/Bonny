@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -12,6 +12,7 @@ export default function AnimalList() {
     const [saving, setSaving] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | undefined>();
     const [searchTerm, setSearchTerm] = useState("");
+    const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
 
     const navigate = useNavigate();
     const { animals, updateAnimalStatus, removeAnimalFromContext } = useAnimals();
@@ -166,7 +167,7 @@ export default function AnimalList() {
                                     {calcularIdade(animal.birthDate)} • {animal.breed || "-"}
                                 </p>
                                 <button
-                                    onClick={() => setEditForm(animal)}
+                                    onClick={() => setSelectedAnimal(animal)}
                                     className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
                                 >
                                     Ver detalhes
@@ -178,6 +179,73 @@ export default function AnimalList() {
             )}
 
             <AnimatePresence>
+                {selectedAnimal && (
+                    <motion.div
+                        className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                    >
+                        <motion.div
+                            className="bg-white rounded-2xl shadow-xl w-full max-w-3xl p-6 relative overflow-y-auto max-h-[90vh]"
+                            initial={{ scale: 0.9 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0.9 }}
+                        >
+                            <button
+                                onClick={() => setSelectedAnimal(null)}
+                                className="absolute top-3 right-3 text-gray-500 hover:text-gray-700"
+                            >
+                                <X size={20} />
+                            </button>
+
+                            <div className="h-60 bg-gray-200 flex items-center justify-center rounded-xl mb-6 relative overflow-hidden">
+                                {selectedAnimal.image ? (
+                                    <img
+                                        src={selectedAnimal.image}
+                                        alt={selectedAnimal.name}
+                                        className="absolute inset-0 w-full h-full object-cover"
+                                    />
+                                ) : (
+                                    <span className="text-gray-400">Sem imagem</span>
+                                )}
+                            </div>
+
+                            <h2 className="text-2xl font-bold text-gray-800 mb-4">{selectedAnimal.name}</h2>
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-8 gap-y-2 text-gray-700">
+                                <p><strong>Raça:</strong> {selectedAnimal.breed || "-"}</p>
+                                <p><strong>Espécie:</strong> {selectedAnimal.species || "-"}</p>
+                                <p><strong>Sexo:</strong> {selectedAnimal.sex}</p>
+                                <p><strong>Cor:</strong> {selectedAnimal.color}</p>
+                                <p><strong>Porte:</strong> {selectedAnimal.size}</p>
+                                <p><strong>Idade:</strong> {calcularIdade(selectedAnimal.birthDate)}</p>
+                                <p><strong>Status:</strong> {selectedAnimal.status}</p>
+                                <p className="sm:col-span-2">
+                                    <strong>Observações:</strong> {selectedAnimal.notes || "Nenhuma"}
+                                </p>
+                            </div>
+
+                            <div className="flex justify-end mt-6 gap-3">
+                                <button
+                                    onClick={() => setSelectedAnimal(null)}
+                                    className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
+                                >
+                                    Voltar
+                                </button>
+                                <button
+                                    onClick={() => {
+                                        setEditForm(selectedAnimal);
+                                        setSelectedAnimal(null);
+                                    }}
+                                    className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow"
+                                >
+                                    Editar
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+
                 {editForm && (
                     <motion.div
                         className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
@@ -251,6 +319,7 @@ export default function AnimalList() {
                                         <option value="Adotado">Adotado</option>
                                         <option value="Em tratamento">Em tratamento</option>
                                         <option value="Em andamento">Em andamento</option>
+                                        <option value="Falecido">Falecido</option>
                                     </select>
                                 </div>
 

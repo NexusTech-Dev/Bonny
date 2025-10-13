@@ -185,6 +185,7 @@ export default function AnimalRegister() {
                                 <option value="Disponível">Disponível</option>
                                 <option value="Adotado">Adotado</option>
                                 <option value="Em tratamento">Em tratamento</option>
+                                <option value="Falecido">Falecido</option>
                             </select>
                             {errors.status && <span className={errorStyle}>{errors.status}</span>}
                         </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -11,7 +11,7 @@ export type Staff = {
     role: string;
     email: string;
     phone: string;
-    sex?: string;
+    sex: string;
     notes?: string;
     image?: string;
 };
@@ -233,6 +233,12 @@ export default function StaffList() {
 
                             <div className="flex justify-end mt-6 gap-3">
                                 <button
+                                    onClick={() => setSelectedStaff(null)}
+                                    className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
+                                >
+                                    Voltar
+                                </button>
+                                <button
                                     onClick={() => {
                                         setEditStaff(selectedStaff);
                                         setEditForm(selectedStaff);
@@ -241,12 +247,6 @@ export default function StaffList() {
                                     className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow"
                                 >
                                     Editar
-                                </button>
-                                <button
-                                    onClick={() => setSelectedStaff(null)}
-                                    className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
-                                >
-                                    Voltar
                                 </button>
                             </div>
                         </motion.div>
@@ -403,8 +403,18 @@ export default function StaffList() {
             </AnimatePresence>
 
             {deleteStaff && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 animate-fadeIn">
-                    <div className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 animate-scaleIn">
+                <motion.div
+                    className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    exit={{ opacity: 0 }}
+                >
+                    <motion.div
+                        className="bg-white rounded-2xl shadow-xl w-full max-w-md p-6 relative overflow-hidden"
+                        initial={{ scale: 0.9 }}
+                        animate={{ scale: 1 }}
+                        exit={{ scale: 0.9 }}
+                    >
                         <h2 className="text-lg font-bold text-gray-800 mb-4">Confirmar exclusão</h2>
                         <p className="text-gray-600 mb-6">
                             Deseja realmente excluir <strong>{deleteStaff.name}</strong>?
@@ -423,8 +433,8 @@ export default function StaffList() {
                                 Excluir
                             </button>
                         </div>
-                    </div>
-                </div>
+                    </motion.div>
+                </motion.div>
             )}
         </div>
     );

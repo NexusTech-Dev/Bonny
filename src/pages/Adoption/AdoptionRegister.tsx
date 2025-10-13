@@ -155,11 +155,9 @@ export default function AdoptionRegister() {
                 transition={{ duration: 0.6 }}
                 className="bg-white w-full max-w-4xl rounded-3xl shadow-xl p-6 md:p-10 space-y-8"
             >
-                {/* Informações da Adoção */}
                 <section>
                     <h2 className="text-lg font-semibold text-gray-700 mb-4">Informações da Adoção</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                        {/* Adotante */}
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Adotante</label>
                             <Select
@@ -177,7 +175,6 @@ export default function AdoptionRegister() {
                             {errors.adopterId && <span className={errorStyle}>{errors.adopterId}</span>}
                         </div>
 
-                        {/* Animal */}
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Animal</label>
                             <Select
@@ -195,7 +192,6 @@ export default function AdoptionRegister() {
                             {errors.animalId && <span className={errorStyle}>{errors.animalId}</span>}
                         </div>
 
-                        {/* Funcionário */}
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Funcionário Responsável</label>
                             <Select
@@ -213,7 +209,6 @@ export default function AdoptionRegister() {
                             {errors.employeeId && <span className={errorStyle}>{errors.employeeId}</span>}
                         </div>
 
-                        {/* Status */}
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Status</label>
                             <Select
@@ -231,7 +226,6 @@ export default function AdoptionRegister() {
                             {errors.status && <span className={errorStyle}>{errors.status}</span>}
                         </div>
 
-                        {/* Data da Adoção */}
                         <div className="flex flex-col sm:col-span-2 lg:col-span-1">
                             <label className="mb-1 font-medium text-gray-700">Data da Adoção</label>
                             <input
@@ -246,7 +240,6 @@ export default function AdoptionRegister() {
                     </div>
                 </section>
 
-                {/* Observações */}
                 <section>
                     <div className="flex flex-col">
                         <label className="text-lg font-semibold text-gray-700 mb-2">Observações</label>
