@@ -238,7 +238,7 @@ export default function StaffRegister() {
                         whileTap={{scale: 0.95}}
                         type="submit"
                         disabled={loading}
-                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-green-500 to-green-700 text-white px-8 py-3 rounded-2xl shadow-lg hover:from-green-600 hover:to-green-800 transition font-medium"
+                        className="w-full sm:w-auto flex items-center justify-center gap-2 bg-gradient-to-r from-blue-500 to-blue-700 text-white px-8 py-3 rounded-2xl shadow-lg hover:from-blue-600 hover:to-blue-800 transition font-medium"
                     >
                         {loading ? "Salvando..." : <><Save className="w-5 h-5"/> Cadastrar</>}
                     </motion.button>
