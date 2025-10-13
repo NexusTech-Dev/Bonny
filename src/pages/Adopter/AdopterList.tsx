@@ -171,7 +171,6 @@ export default function AdopterList() {
 
     return (
         <div className="p-6 flex flex-col gap-6">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h1 className="text-3xl font-bold text-gray-800">Adotantes</h1>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -183,7 +182,7 @@ export default function AdopterList() {
                     />
                     <button
                         className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition shadow"
-                        onClick={() => navigate("/adopterRegister")}
+                        onClick={() => navigate("/adopter")}
                     >
                         <Plus size={18} /> <span className="hidden sm:inline">Cadastrar</span>
                     </button>
