@@ -1,6 +1,6 @@
 import React, {useState, useEffect, type ChangeEvent} from "react";
 import {motion} from "framer-motion";
-import {UserCheck, Save, Upload} from "lucide-react";
+import {UserStar, Save, Upload} from "lucide-react";
 import {useNavigate, useParams} from "react-router-dom";
 import toast from "react-hot-toast";
 import {registerStaff, getStaff, updateStaffById} from "../../services/staffService.ts";
@@ -39,7 +39,7 @@ export default function StaffRegister() {
                 name: staff.name,
                 email: staff.email,
                 phone: staff.phone,
-                sex: (staff as any).sex || "",
+                sex: staff.sex,
                 role: (staff as any).role || "",
                 notes: (staff as any).notes || "",
             });
@@ -87,7 +87,14 @@ export default function StaffRegister() {
             else await registerStaff(formData, imageFile || undefined);
 
             toast.success(`Funcionário ${id ? "atualizado" : "cadastrado"} com sucesso!`);
-            navigate("/staffList");
+            setFormData({
+                name: "",
+                email: "",
+                phone: "",
+                sex: "",
+                role: "",
+                notes: "",
+            })
         } catch {
             toast.error("Erro ao salvar funcionário.");
         } finally {
@@ -123,7 +130,7 @@ export default function StaffRegister() {
                 transition={{duration: 0.6}}
                 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-10 flex items-center gap-2 text-center"
             >
-                <UserCheck className="w-7 h-7 md:w-8 md:h-8 text-green-600"/> Cadastro de Funcionários
+                <UserStar className="w-7 h-7 md:w-8 md:h-8 text-blue-600"/> Cadastro de Funcionários
             </motion.h1>
 
             <motion.form

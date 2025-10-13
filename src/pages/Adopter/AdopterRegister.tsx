@@ -146,9 +146,25 @@ export default function AdopterRegister() {
             }
             if (id) await updateAdopterById(id, formData);
             else await registerAdopter(formData);
-
             toast.success(`Adotante ${id ? "atualizado" : "cadastrado"} com sucesso!`);
-            navigate("/adopterList");
+            setFormData({
+                name: "",
+                email: "",
+                phone: "",
+                sex: "",
+                notes: "",
+                rg: "",
+                cpf: "",
+                maritalStatus: "",
+                state: "",
+                city: "",
+                district: "",
+                street: "",
+                number: "",
+                complement: "",
+                cep: "",
+                hasPets: false,
+            });
         } catch {
             toast.error("Erro ao salvar adotante.");
         } finally {
@@ -174,7 +190,7 @@ export default function AdopterRegister() {
                 transition={{ duration: 0.6 }}
                 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-10 flex items-center gap-2 text-center"
             >
-                <UserCheck className="w-7 h-7 md:w-8 md:h-8 text-green-600" />{" "}
+                <UserCheck className="w-7 h-7 md:w-8 md:h-8 text-blue-600" />{" "}
                 Cadastro de Adotantes
             </motion.h1>
 

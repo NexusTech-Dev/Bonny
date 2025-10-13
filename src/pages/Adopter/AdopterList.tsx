@@ -1,4 +1,4 @@
-import { useState, useEffect, type ChangeEvent } from "react";
+import React, { useState, useEffect, type ChangeEvent } from "react";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
@@ -182,7 +182,7 @@ export default function AdopterList() {
                         className="flex-1 sm:w-64 px-4 py-2 border border-gray-300 rounded-xl shadow-inner focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
                     />
                     <button
-                        className="flex items-center gap-2 bg-green-600 text-white px-4 py-2 rounded-xl hover:bg-green-700 transition shadow"
+                        className="flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-xl hover:bg-blue-700 transition shadow"
                         onClick={() => navigate("/adopterRegister")}
                     >
                         <Plus size={18} /> <span className="hidden sm:inline">Cadastrar</span>
@@ -190,7 +190,6 @@ export default function AdopterList() {
                 </div>
             </div>
 
-            {/* Grid de adotantes */}
             {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {[...Array(6)].map((_, i) => (
@@ -237,7 +236,6 @@ export default function AdopterList() {
             )}
 
             <AnimatePresence>
-                {/* Modal detalhes */}
                 {selectedAdopter && (
                     <motion.div
                         className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
@@ -272,23 +270,22 @@ export default function AdopterList() {
                             </div>
                             <div className="flex justify-end mt-6 gap-3">
                                 <button
-                                    onClick={() => { setEditing(selectedAdopter); setSelectedAdopter(null); }}
-                                    className="px-4 py-2 rounded-lg bg-green-600 text-white hover:bg-green-700 transition shadow"
-                                >
-                                    Editar
-                                </button>
-                                <button
                                     onClick={() => setSelectedAdopter(null)}
                                     className="px-4 py-2 rounded-lg border border-gray-300 hover:bg-gray-100 transition"
                                 >
                                     Voltar
+                                </button>
+                                <button
+                                    onClick={() => { setEditing(selectedAdopter); setSelectedAdopter(null); }}
+                                    className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow"
+                                >
+                                    Editar
                                 </button>
                             </div>
                         </motion.div>
                     </motion.div>
                 )}
 
-                {/* Modal edição */}
                 {editing && (
                     <motion.div
                         className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50"
@@ -410,7 +407,6 @@ export default function AdopterList() {
                                         <ErrorMessage message={errors.complement} />
                                     </div>
 
-                                    {/* CEP */}
                                     <div className="flex flex-col">
                                         <label className="mb-1 font-medium text-gray-700">CEP</label>
                                         <input
@@ -481,18 +477,18 @@ export default function AdopterList() {
 
                                 <div className="flex justify-end gap-3 mt-4">
                                     <button
-                                        type="submit"
-                                        disabled={saving}
-                                        className="px-6 py-2 bg-green-600 text-white rounded-xl hover:bg-green-700 transition shadow"
-                                    >
-                                        Salvar
-                                    </button>
-                                    <button
                                         type="button"
                                         onClick={() => { setEditing(null); setErrors({}); }}
                                         className="px-6 py-2 border border-gray-300 rounded-xl hover:bg-gray-100 transition"
                                     >
                                         Cancelar
+                                    </button>
+                                    <button
+                                        type="submit"
+                                        disabled={saving}
+                                        className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition shadow"
+                                    >
+                                        {saving ? "Salvando..." : "Salvar"}
                                     </button>
                                 </div>
                             </form>

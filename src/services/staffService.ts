@@ -49,6 +49,7 @@ export const getStaff = async (): Promise<Staff[]> => {
             role: data.role || "",
             email: data.email || "",
             phone: data.phone || "",
+            sex: data.sex || "",
             image: data.image || "",
         };
     });
