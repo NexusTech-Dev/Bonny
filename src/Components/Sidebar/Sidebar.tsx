@@ -23,7 +23,7 @@ function SideBar() {
         { id: "animals", label: "Animais", icon: PawPrint, href: "/animals" },
         { id: "staff", label: "Funcionários", icon: Briefcase, href: "/staff" },
         { id: "adopter", label: "Adotantes", icon: HeartHandshake, href: "/adopter" },
-        { id: "vaccines", label: "Vacinas", icon: Archive, href: "/vaccines" },
+        { id: "health", label: "Saúde", icon: Archive, href: "/health" },
         { id: "adoptions", label: "Adoções", icon: FileText, href: "/adoptions" },
     ];
 

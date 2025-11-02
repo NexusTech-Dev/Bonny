@@ -5,7 +5,7 @@ import AnimalList from "./pages/Animal/AnimalList.tsx";
 import StaffRegister from "./pages/Staff/StaffRegister.tsx";
 import StaffList from "./pages/Staff/StaffList.tsx";
 import Dashboard from "./pages/Dashboard.tsx";
-import VaccineRegister from "./pages/VaccineRegister.tsx";
+import HealthScreen from "./pages/Health/HealthScreen.tsx";
 import AdoptionRegister from "./pages/Adoption/AdoptionRegister.tsx";
 import AdoptionList from "./pages/Adoption/AdoptionList.tsx";
 import AdopterRegister from "./pages/Adopter/AdopterRegister.tsx";
@@ -17,6 +17,7 @@ import {Toaster} from "react-hot-toast";
 import type {JSX} from "react";
 import {AnimalsProvider} from "./context/AnimalsContext.tsx";
 import { AdoptionsProvider } from "./context/AdoptionsContext";
+import VaccineRegister from "./pages/Health/Vaccine/VaccineRegister.tsx";
 
 const ProtectedLayout = ({children}: { children: JSX.Element }) => (
     <div className="flex h-screen bg-gray-100">
@@ -54,7 +55,9 @@ export default function App() {
                             <Route path="/Adopter" element={<ProtectedRoute element={<AdopterRegister/>}/>}/>
                             <Route path="/AdopterList" element={<ProtectedRoute element={<AdopterList/>}/>}/>
 
-                            <Route path="/vaccines" element={<ProtectedRoute element={<VaccineRegister/>}/>}/>
+                            <Route path="/Health" element={<ProtectedRoute element={<HealthScreen/>}/>}/>
+                            <Route path="/VaccineRegister" element={<ProtectedRoute element={<VaccineRegister/>}/>}/>
+
 
                             <Route path="/adoptions" element={<ProtectedRoute element={<AdoptionRegister/>}/>}/>
                             <Route path="/AdoptionList" element={<ProtectedRoute element={<AdoptionList/>}/>}/>
