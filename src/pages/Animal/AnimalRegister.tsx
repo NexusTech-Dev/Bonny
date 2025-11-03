@@ -26,6 +26,36 @@ export default function AnimalRegister() {
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
 
+    const colors = [
+        "Branco", "Preto", "Cinza", "Marrom", "Caramelo", "Amarelo", "Bege", "Dourado", "Roxo",
+        "Laranja", "Azul", "Verde", "Vermelho", "Rosado", "Malhado", "Rajado", "Cinza Claro", "Cinza Escuro",
+        "Marrom Claro", "Marrom Escuro"
+    ];
+
+    const dogBreeds = [
+        "Labrador", "SRD","Golden Retriever", "Bulldog", "Poodle", "Beagle", "Shih Tzu", "Yorkshire",
+        "Pastor Alemão", "Boxer", "Dachshund", "Rottweiler", "Schnauzer", "Pitbull", "Husky",
+        "Cocker Spaniel", "Pug", "Buldogue Francês", "Maltês", "Pinscher", "Chihuahua",
+        "Akita", "Border Collie", "Basset Hound", "Bernese", "Cane Corso", "Doberman",
+        "Fila Brasileiro", "Shar Pei", "Lhasa Apso", "Welsh Corgi", "Shiba Inu", "Samoyed",
+        "Australian Shepherd", "Dogo Argentino", "Pomeranian", "Alaskan Malamute", "Staffordshire Bull Terrier",
+        "Yorkiepoo", "Cavalier King Charles", "Havanese", "Italian Greyhound", "Jack Russell Terrier",
+        "Keeshond", "Mastiff", "Mini Schnauzer", "Norfolk Terrier", "Papillon", "Pekingese",
+        "Scottish Terrier", "Sealyham Terrier", "Shetland Sheepdog", "Silky Terrier", "Tibetan Spaniel",
+        "Welsh Terrier", "Whippet", "Yorkshire Terrier"
+    ];
+
+    const catBreeds = [
+        "Persa", "Siamês", "Maine Coon", "Sphynx", "Ragdoll", "Bengal", "Abissínio",
+        "Exótico", "Birmanês", "Siberiano", "Oriental", "Himalaio", "British Shorthair",
+        "American Shorthair", "Norueguês da Floresta", "Devon Rex", "Cornish Rex", "Balinês",
+        "Scottish Fold", "Ragamuffin", "Toyger", "Munchkin", "Manx", "Chartreux", "Selkirk Rex",
+        "Ocicat", "LaPerm", "Sokoke", "Turco Van", "Angorá Turco", "Khao Manee", "Singapura",
+        "Cymric", "Havana Brown", "Peterbald", "Oriental Longhair", "Snowshoe", "Kurilian Bobtail",
+        "Toybob", "Australian Mist", "Brazilian Shorthair", "Chantilly-Tiffany", "Japanese Bobtail",
+        "Korat", "Napoleon", "Serengeti", "Savannah", "Toyger", "Ukrainian Levkoy", "York Chocolate"
+    ];
+
     const handleChange = (
         e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>
     ) => {
@@ -93,8 +123,10 @@ export default function AnimalRegister() {
 
     const errorStyle = "text-sm text-red-500 mt-1";
 
+    const breedOptions = formData.species === "cachorro" ? dogBreeds : formData.species === "gato" ? catBreeds : [];
+
     return (
-        <div className="min-h-screen flex flex-col items-center px-4 py-10">
+        <div className="relative z-10 min-h-screen flex flex-col items-center px-4 py-10">
             <motion.h1
                 initial={{ opacity: 0, y: -20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -109,8 +141,9 @@ export default function AnimalRegister() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: 0.6 }}
-                className="bg-white w-full max-w-5xl rounded-3xl shadow-xl p-6 md:p-10 space-y-8"
+                className="bg-white w-full max-w-5xl rounded-3xl shadow-xl p-6 md:p-10 space-y-8 overflow-visible"
             >
+                {/* Informações do Animal */}
                 <section>
                     <h2 className="text-lg font-semibold text-gray-700 mb-4">Informações do Animal</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -119,11 +152,13 @@ export default function AnimalRegister() {
                             <input type="text" name="name" value={formData.name} onChange={handleChange} className={inputModern(!!errors.name)} />
                             {errors.name && <span className={errorStyle}>{errors.name}</span>}
                         </div>
+
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Data de Nascimento</label>
                             <input type="date" name="birthDate" value={formData.birthDate} onChange={handleChange} className={inputModern(!!errors.birthDate)} />
                             {errors.birthDate && <span className={errorStyle}>{errors.birthDate}</span>}
                         </div>
+
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Sexo</label>
                             <div className="flex flex-wrap gap-4 items-center mt-1">
@@ -139,38 +174,49 @@ export default function AnimalRegister() {
                     </div>
                 </section>
 
+                {/* Características */}
                 <section>
                     <h2 className="text-lg font-semibold text-gray-700 mb-4">Características</h2>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Cor</label>
-                            <input type="text" name="color" value={formData.color} onChange={handleChange} className={inputModern(!!errors.color)} />
+                            <select name="color" value={formData.color} onChange={handleChange} className={inputModern(!!errors.color) + " relative z-10"}>
+                                <option value="">Selecione a cor</option>
+                                {colors.map((color) => <option key={color} value={color}>{color}</option>)}
+                            </select>
                             {errors.color && <span className={errorStyle}>{errors.color}</span>}
                         </div>
+
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Espécie</label>
-                            <select name="species" value={formData.species} onChange={handleChange} className={inputModern(!!errors.species)}>
+                            <select name="species" value={formData.species} onChange={handleChange} className={inputModern(!!errors.species) + " relative z-10"}>
                                 <option value="">Selecione a espécie</option>
                                 <option value="cachorro">Cachorro</option>
                                 <option value="gato">Gato</option>
                             </select>
                             {errors.species && <span className={errorStyle}>{errors.species}</span>}
                         </div>
+
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Raça</label>
-                            <input type="text" name="breed" value={formData.breed} onChange={handleChange} className={inputModern(!!errors.breed)} />
+                            <select name="breed" value={formData.breed} onChange={handleChange} className={inputModern(!!errors.breed) + " relative z-10"}>
+                                <option value="">Selecione a raça</option>
+                                {breedOptions.map((breed) => <option key={breed} value={breed}>{breed}</option>)}
+                            </select>
                             {errors.breed && <span className={errorStyle}>{errors.breed}</span>}
                         </div>
                     </div>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Data de Resgate</label>
                             <input type="date" name="rescueDate" value={formData.rescueDate} onChange={handleChange} className={inputModern(!!errors.rescueDate)} />
                             {errors.rescueDate && <span className={errorStyle}>{errors.rescueDate}</span>}
                         </div>
+
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Porte</label>
-                            <select name="size" value={formData.size} onChange={handleChange} className={inputModern(!!errors.size)}>
+                            <select name="size" value={formData.size} onChange={handleChange} className={inputModern(!!errors.size) + " relative z-10"}>
                                 <option value="">Selecione o porte</option>
                                 <option value="pequeno">Pequeno</option>
                                 <option value="medio">Médio</option>
@@ -178,9 +224,10 @@ export default function AnimalRegister() {
                             </select>
                             {errors.size && <span className={errorStyle}>{errors.size}</span>}
                         </div>
+
                         <div className="flex flex-col">
                             <label className="mb-1 font-medium text-gray-700">Status</label>
-                            <select name="status" value={formData.status} onChange={handleChange} className={inputModern(!!errors.status)}>
+                            <select name="status" value={formData.status} onChange={handleChange} className={inputModern(!!errors.status) + " relative z-10"}>
                                 <option value="">Selecione o status</option>
                                 <option value="Disponível">Disponível</option>
                                 <option value="Adotado">Adotado</option>
@@ -192,6 +239,7 @@ export default function AnimalRegister() {
                     </div>
                 </section>
 
+                {/* Observações */}
                 <section>
                     <div className="flex flex-col">
                         <label className="text-lg font-semibold text-gray-700 mb-2">Observações</label>
@@ -206,6 +254,7 @@ export default function AnimalRegister() {
                     </div>
                 </section>
 
+                {/* Imagem */}
                 <div className="flex flex-col items-center">
                     <label
                         className={`cursor-pointer flex flex-col items-center justify-center w-40 sm:w-48 h-32 sm:h-36 rounded-2xl
@@ -224,6 +273,7 @@ export default function AnimalRegister() {
                     </label>
                 </div>
 
+                {/* Botões */}
                 <div className="flex flex-col sm:flex-row justify-between gap-4">
                     <motion.button
                         whileTap={{ scale: 0.95 }}
