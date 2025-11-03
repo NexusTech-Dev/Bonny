@@ -46,7 +46,7 @@ export default function AnimalRegister() {
     ];
 
     const catBreeds = [
-        "Persa", "Siamês", "Maine Coon", "Sphynx", "Ragdoll", "Bengal", "Abissínio",
+        "SRD", "Persa", "Siamês", "Maine Coon", "Sphynx", "Ragdoll", "Bengal", "Abissínio",
         "Exótico", "Birmanês", "Siberiano", "Oriental", "Himalaio", "British Shorthair",
         "American Shorthair", "Norueguês da Floresta", "Devon Rex", "Cornish Rex", "Balinês",
         "Scottish Fold", "Ragamuffin", "Toyger", "Munchkin", "Manx", "Chartreux", "Selkirk Rex",
