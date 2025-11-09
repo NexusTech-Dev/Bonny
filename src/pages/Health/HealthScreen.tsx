@@ -16,9 +16,9 @@ export default function HealthRegister() {
     function handleAccess() {
         if (!healthType) return;
 
-        if (healthType === "vacina") navigate("/vaccineRegister");
-        if (healthType === "vermifugo") navigate("/vermifugo");
-        if (healthType === "antiparasitario") navigate("/antiparasitario");
+        if (healthType === "vacina") navigate("/VaccineRegister");
+        if (healthType === "vermifugo") navigate("/DewormingRegister");
+        if (healthType === "antiparasitario") navigate("/AntiparasiticRegister");
     }
 
     return (
@@ -62,7 +62,7 @@ export default function HealthRegister() {
                     <motion.button
                         whileTap={{ scale: 0.95 }}
                         type="button"
-                        onClick={() => navigate("/health-card")}
+                        onClick={() => navigate("/HealthCardList")}
                         className="w-full sm:w-auto flex items-center justify-center gap-2 px-1 sm:px-6 py-3 rounded-2xl bg-gray-600 text-white shadow hover:bg-gray-700 transition font-medium"
                     >
                         <ClipboardEdit className="w-5 h-5" />

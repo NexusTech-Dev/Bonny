@@ -18,6 +18,9 @@ import type {JSX} from "react";
 import {AnimalsProvider} from "./context/AnimalsContext.tsx";
 import { AdoptionsProvider } from "./context/AdoptionsContext";
 import VaccineRegister from "./pages/Health/Vaccine/VaccineRegister.tsx";
+import DewormingRegister from "./pages/Health/DewormingRegister/DewormingRegister.tsx";
+import AntiparasiticRegister from "./pages/Health/AntiparasiticRegister/AntiparasiticRegister.tsx";
+import HealthCardList from "./pages/Health/HealthCardList/HealthCardList.tsx";
 
 const ProtectedLayout = ({children}: { children: JSX.Element }) => (
     <div className="flex h-screen bg-gray-100">
@@ -57,6 +60,9 @@ export default function App() {
 
                             <Route path="/Health" element={<ProtectedRoute element={<HealthScreen/>}/>}/>
                             <Route path="/VaccineRegister" element={<ProtectedRoute element={<VaccineRegister/>}/>}/>
+                            <Route path="/DewormingRegister" element={<ProtectedRoute element={<DewormingRegister/>}/>}/>
+                            <Route path="/AntiparasiticRegister" element={<ProtectedRoute element={<AntiparasiticRegister/>}/>}/>
+                            <Route path="/HealthCardList" element={<ProtectedRoute element={<HealthCardList/>}/>}/>
 
 
                             <Route path="/adoptions" element={<ProtectedRoute element={<AdoptionRegister/>}/>}/>

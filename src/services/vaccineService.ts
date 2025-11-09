@@ -4,7 +4,10 @@ import {
     addDoc,
     getDocs,
     Timestamp,
+    deleteDoc,
+    doc,
 } from "firebase/firestore";
+import type {HealthRecord} from "../pages/Health/types/healthRecord.ts";
 
 interface VaccineData {
     vaccineId: string | string[];
@@ -23,7 +26,7 @@ const vaccineCollection = collection(db, "vaccines");
 export const registerVaccine = async (data: VaccineData & { vaccineId: string[] }) => {
     try {
         await Promise.all(
-            data.vaccineId.map(id =>
+            data.vaccineId.map((id) =>
                 addDoc(vaccineCollection, {
                     ...data,
                     vaccineId: id,
@@ -41,15 +44,24 @@ export const registerVaccine = async (data: VaccineData & { vaccineId: string[] 
     }
 };
 
-export const getVaccines = async () => {
+export const getVaccines = async (): Promise<HealthRecord[]> => {
     try {
         const snapshot = await getDocs(vaccineCollection);
         return snapshot.docs.map((doc) => ({
             id: doc.id,
-            ...doc.data(),
+            ...(doc.data() as Omit<HealthRecord, "id">),
         }));
     } catch (error) {
         console.error("Erro ao buscar vacinas:", error);
+        throw error;
+    }
+};
+
+export const deleteVaccineRecord = async (id: string) => {
+    try {
+        await deleteDoc(doc(db, "vaccines", id));
+    } catch (error) {
+        console.error("Erro ao excluir vacina:", error);
         throw error;
     }
 };
