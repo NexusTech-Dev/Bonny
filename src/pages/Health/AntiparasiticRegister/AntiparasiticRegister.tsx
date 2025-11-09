@@ -1,56 +1,51 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import {Syringe, Save} from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { Bug, Save } from "lucide-react";
+import { useNavigate, Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import Select from "react-select";
+import { FiArrowLeft } from "react-icons/fi";
 import { useAnimals } from "../../../context/AnimalsContext.tsx";
 import { getStaff } from "../../../services/staffService";
-import { registerVaccine } from "../../../services/vaccineService.ts";
-import {FiArrowLeft} from "react-icons/fi";
-import {Link} from "react-router-dom";
+import { registerAntiparasitic } from "../../../services/antiparasiticService.ts";
 
-export default function VaccineRegister() {
+export default function AntiparasiticRegister() {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
     const { animals } = useAnimals();
 
     const [formData, setFormData] = useState({
-        vaccineId: [] as string[],
+        antiparasiticId: [] as string[],
         animalId: "",
         employeeId: "",
         applicationDate: "",
-        nextDoseDate: "",
+        nextApplicationDate: "",
         notes: "",
-        booster1: "",
-        booster2: "",
-        booster3:"",
     });
 
     const [errors, setErrors] = useState<{ [key: string]: string }>({});
     const [employees, setEmployees] = useState<any[]>([]);
-    const [selectedVaccine, setSelectedVaccine] = useState<any[]>([]);
+    const [selectedAntiparasitic, setSelectedAntiparasitic] = useState<any[]>([]);
     const [selectedAnimal, setSelectedAnimal] = useState<any>(null);
     const [selectedEmployee, setSelectedEmployee] = useState<any>(null);
 
-    const vaccineOptions = [
+    const antiparasiticOptions = [
         {
             label: "Cães",
             options: [
-                { value: "vacina_antirrabica", label: "Antirrábica" },
-                { value: "vacina_v8", label: "V8" },
-                { value: "vacina_v10", label: "V10" },
-                { value: "vacina_gripe_canina", label: "Gripe Canina" },
-                { value: "vacina_giardia", label: "Giárdia" },
+                { value: "antipulgas_bravecto", label: "Bravecto" },
+                { value: "antipulgas_nexgard", label: "NexGard" },
+                { value: "antipulgas_simparic", label: "Simparic" },
+                { value: "antipulgas_advocate", label: "Advocate" },
             ],
         },
         {
             label: "Gatos",
             options: [
-                { value: "vacina_antirabica_gato", label: "Antirrábica" },
-                { value: "vacina_v3", label: "V3" },
-                { value: "vacina_v4", label: "V4" },
-                { value: "vacina_v5", label: "V5" },
+                { value: "antipulgas_revolution", label: "Revolution" },
+                { value: "antipulgas_frontline", label: "Frontline" },
+                { value: "antipulgas_advantage", label: "Advantage" },
+                { value: "antipulgas_profender", label: "Profender" },
             ],
         },
     ];
@@ -68,10 +63,19 @@ export default function VaccineRegister() {
         fetchData();
     }, []);
 
-    const animalOptions = animals.map((a: { id: any; name: any; }) => ({ value: a.id, label: a.name }));
-    const employeeOptions = employees.map(e => ({ value: e.id, label: e.name }));
+    const animalOptions = animals.map((a: { id: any; name: any }) => ({
+        value: a.id,
+        label: a.name,
+    }));
 
-    const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const employeeOptions = employees.map((e) => ({
+        value: e.id,
+        label: e.name,
+    }));
+
+    const handleChange = (
+        e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    ) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
         setErrors({ ...errors, [name]: "" });
@@ -79,13 +83,24 @@ export default function VaccineRegister() {
 
     const validate = () => {
         const newErrors: { [key: string]: string } = {};
-        const requiredFields = ["vaccineId", "animalId", "employeeId", "applicationDate"];
+        const requiredFields = [
+            "antiparasiticId",
+            "animalId",
+            "employeeId",
+            "applicationDate",
+            "nextApplicationDate",
+        ];
+
         requiredFields.forEach((field) => {
-            if (!formData[field as keyof typeof formData] ||
-                (Array.isArray(formData[field as keyof typeof formData]) && formData[field as keyof typeof formData].length === 0)) {
+            if (
+                !formData[field as keyof typeof formData] ||
+                (Array.isArray(formData[field as keyof typeof formData]) &&
+                    formData[field as keyof typeof formData].length === 0)
+            ) {
                 newErrors[field] = "Campo obrigatório";
             }
         });
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -96,27 +111,24 @@ export default function VaccineRegister() {
 
         setLoading(true);
         try {
-            await registerVaccine(formData);
-            toast.success("Vacinação registrada com sucesso!");
+            await registerAntiparasitic(formData);
+            toast.success("Antiparasitário registrado com sucesso!");
 
             setFormData({
-                vaccineId: [],
+                antiparasiticId: [],
                 animalId: "",
                 employeeId: "",
                 applicationDate: "",
-                nextDoseDate: "",
+                nextApplicationDate: "",
                 notes: "",
-                booster1: "",
-                booster2: "",
-                booster3: "",
             });
-            setSelectedVaccine([]);
+            setSelectedAntiparasitic([]);
             setSelectedAnimal(null);
             setSelectedEmployee(null);
             setErrors({});
         } catch (error) {
             console.error(error);
-            toast.error("Erro ao registrar vacinação.");
+            toast.error("Erro ao registrar antiparasitário.");
         } finally {
             setLoading(false);
         }
@@ -124,7 +136,9 @@ export default function VaccineRegister() {
 
     const inputModern = (error?: boolean) =>
         `w-full px-4 py-3 rounded-xl shadow-sm focus:ring-2 focus:outline-none transition placeholder-gray-400 text-gray-800 ${
-            error ? "border-2 border-red-500 focus:ring-red-500 bg-red-50" : "bg-gray-100/70 focus:ring-blue-500"
+            error
+                ? "border-2 border-red-500 focus:ring-red-500 bg-red-50"
+                : "bg-gray-100/70 focus:ring-blue-500"
         }`;
 
     const errorStyle = "text-sm text-red-500 mt-1";
@@ -164,8 +178,6 @@ export default function VaccineRegister() {
         }),
     });
 
-
-
     return (
         <div className="min-h-screen flex flex-col items-center px-4 py-10">
             <motion.h1
@@ -174,7 +186,7 @@ export default function VaccineRegister() {
                 transition={{ duration: 0.6 }}
                 className="text-2xl md:text-3xl font-extrabold text-gray-800 mb-10 flex items-center gap-2"
             >
-                <Syringe className="w-7 h-7 text-blue-600"/> Registro de Vacinação
+                <Bug className="w-7 h-7 text-blue-600" /> Registro de Antiparasitário
             </motion.h1>
 
             <motion.form
@@ -191,63 +203,91 @@ export default function VaccineRegister() {
                     >
                         <FiArrowLeft /> Voltar
                     </Link>
-                    <h2 className="text-lg font-semibold text-gray-700 mb-4">Informações da Vacina</h2>
+                    <h2 className="text-lg font-semibold text-gray-700 mb-4">
+                        Informações do Antiparasitário
+                    </h2>
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
                         <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700">Vacina</label>
+                            <label className="mb-1 font-medium text-gray-700">
+                                Antiparasitário
+                            </label>
                             <Select
-                                options={vaccineOptions}
-                                value={selectedVaccine}
+                                options={antiparasiticOptions}
+                                value={selectedAntiparasitic}
                                 onChange={(options) => {
                                     const selected = options as any[];
-                                    setSelectedVaccine(selected);
-                                    setFormData({ ...formData, vaccineId: selected.map(o => o.value) });
+                                    setSelectedAntiparasitic(selected);
+                                    setFormData({
+                                        ...formData,
+                                        antiparasiticId: selected.map((o) => o.value),
+                                    });
                                     if (selected.length > 0) {
-                                        setErrors({ ...errors, vaccineId: "" });
+                                        setErrors({ ...errors, antiparasiticId: "" });
                                     }
                                 }}
                                 placeholder="Selecione"
                                 isMulti
-                                styles={selectStyles(!!errors.vaccineId)}
+                                styles={selectStyles(!!errors.antiparasiticId)}
                                 closeMenuOnSelect={false}
                             />
-                            {errors.vaccineId && <span className={errorStyle}>{errors.vaccineId}</span>}
+                            {errors.antiparasiticId && (
+                                <span className={errorStyle}>
+                                    {errors.antiparasiticId}
+                                </span>
+                            )}
                         </div>
 
                         <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700">Animal</label>
+                            <label className="mb-1 font-medium text-gray-700">
+                                Animal
+                            </label>
                             <Select
                                 options={animalOptions}
                                 value={selectedAnimal}
                                 onChange={(option) => {
                                     setSelectedAnimal(option);
-                                    setFormData({ ...formData, animalId: option?.value || "" });
+                                    setFormData({
+                                        ...formData,
+                                        animalId: option?.value || "",
+                                    });
                                     setErrors({ ...errors, animalId: "" });
                                 }}
                                 placeholder="Selecione"
                                 styles={selectStyles(!!errors.animalId)}
                             />
-                            {errors.animalId && <span className={errorStyle}>{errors.animalId}</span>}
+                            {errors.animalId && (
+                                <span className={errorStyle}>{errors.animalId}</span>
+                            )}
                         </div>
 
                         <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700">Funcionário Aplicador</label>
+                            <label className="mb-1 font-medium text-gray-700">
+                                Funcionário Aplicador
+                            </label>
                             <Select
                                 options={employeeOptions}
                                 value={selectedEmployee}
                                 onChange={(option) => {
                                     setSelectedEmployee(option);
-                                    setFormData({ ...formData, employeeId: option?.value || "" });
+                                    setFormData({
+                                        ...formData,
+                                        employeeId: option?.value || "",
+                                    });
                                     setErrors({ ...errors, employeeId: "" });
                                 }}
                                 placeholder="Selecione"
                                 styles={selectStyles(!!errors.employeeId)}
                             />
-                            {errors.employeeId && <span className={errorStyle}>{errors.employeeId}</span>}
+                            {errors.employeeId && (
+                                <span className={errorStyle}>{errors.employeeId}</span>
+                            )}
                         </div>
 
                         <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700">Data de Aplicação</label>
+                            <label className="mb-1 font-medium text-gray-700">
+                                Data de Aplicação
+                            </label>
                             <input
                                 type="date"
                                 name="applicationDate"
@@ -255,47 +295,37 @@ export default function VaccineRegister() {
                                 onChange={handleChange}
                                 className={inputModern(!!errors.applicationDate)}
                             />
-                            {errors.applicationDate && <span className={errorStyle}>{errors.applicationDate}</span>}
+                            {errors.applicationDate && (
+                                <span className={errorStyle}>
+                                    {errors.applicationDate}
+                                </span>
+                            )}
                         </div>
 
                         <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700">1º Reforço</label>
+                            <label className="mb-1 font-medium text-gray-700">
+                                Próxima Aplicação
+                            </label>
                             <input
                                 type="date"
-                                name="booster1"
-                                value={formData.booster1}
+                                name="nextApplicationDate"
+                                value={formData.nextApplicationDate}
                                 onChange={handleChange}
-                                className={inputModern()}
+                                className={inputModern(!!errors.nextApplicationDate)}
                             />
+                            {errors.nextApplicationDate && (
+                                <span className={errorStyle}>
+                                    {errors.nextApplicationDate}
+                                </span>
+                            )}
                         </div>
-
-                        <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700">2º Reforço</label>
-                            <input
-                                type="date"
-                                name="booster2"
-                                value={formData.booster2}
-                                onChange={handleChange}
-                                className={inputModern()}
-                            />
-                        </div>
-
-                        <div className="flex flex-col">
-                            <label className="mb-1 font-medium text-gray-700">3º Reforço</label>
-                            <input
-                                type="date"
-                                name="booster3"
-                                value={formData.booster3}
-                                onChange={handleChange}
-                                className={inputModern()}
-                            />
-                        </div>
-
                     </div>
                 </section>
 
                 <section>
-                    <label className="text-lg font-semibold text-gray-700 mb-2">Observações</label>
+                    <label className="text-lg font-semibold text-gray-700 mb-2">
+                        Observações
+                    </label>
                     <textarea
                         rows={4}
                         name="notes"
@@ -324,7 +354,13 @@ export default function VaccineRegister() {
                             loading ? "cursor-not-allowed opacity-50" : ""
                         }`}
                     >
-                        {loading ? "Salvando..." : (<><Save className="w-5 h-5" /> Salvar</>)}
+                        {loading ? (
+                            "Salvando..."
+                        ) : (
+                            <>
+                                <Save className="w-5 h-5" /> Salvar
+                            </>
+                        )}
                     </motion.button>
                 </div>
             </motion.form>
