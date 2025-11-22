@@ -37,7 +37,6 @@ export default function AdoptionList() {
     const [searchTerm, setSearchTerm] = useState("");
     const navigate = useNavigate();
 
-    // Paginação
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 8;
 
@@ -144,7 +143,6 @@ export default function AdoptionList() {
             .some(field => field.toLowerCase().includes(searchTerm.toLowerCase()))
     );
 
-    // Paginação: cálculos e helpers
     const totalPages = Math.max(1, Math.ceil(filteredAdoptions.length / itemsPerPage));
     const startIndex = (currentPage - 1) * itemsPerPage;
     const endIndex = Math.min(filteredAdoptions.length, currentPage * itemsPerPage);
@@ -160,20 +158,17 @@ export default function AdoptionList() {
     const prevPage = () => goToPage(currentPage - 1);
     const nextPage = () => goToPage(currentPage + 1);
 
-    // Mantém página válida ao mudar o conjunto filtrado
     useEffect(() => {
         const tp = Math.max(1, Math.ceil(filteredAdoptions.length / itemsPerPage));
         if (currentPage > tp) setCurrentPage(tp);
-    }, [filteredAdoptions.length]);
+    }, [currentPage, filteredAdoptions.length]);
 
-    // Reset página ao alterar termo de busca
     useEffect(() => {
         setCurrentPage(1);
     }, [searchTerm]);
 
     return (
         <div className="p-6 flex flex-col gap-6">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                 <h1 className="text-3xl font-bold text-gray-800">Adoções</h1>
                 <div className="flex items-center gap-3 w-full sm:w-auto">
@@ -192,7 +187,6 @@ export default function AdoptionList() {
                 </div>
             </div>
 
-            {/* Lista */}
             {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                     {[...Array(itemsPerPage)].map((_, i) => (
@@ -252,7 +246,6 @@ export default function AdoptionList() {
                         })}
                     </div>
 
-                    {/* Paginação */}
                     <div className="flex flex-col gap-5 items-center justify-between mt-6">
                         <div className="flex items-center gap-2">
                             <button
@@ -292,7 +285,6 @@ export default function AdoptionList() {
                 </>
             )}
 
-            {/* Modais */}
             <AnimatePresence>
                 {selectedAdoption && (
                     <motion.div

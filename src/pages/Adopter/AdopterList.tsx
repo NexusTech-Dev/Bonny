@@ -78,7 +78,7 @@ export default function AdopterList() {
     useEffect(() => {
         const tp = Math.max(1, Math.ceil(filteredAdopters.length / itemsPerPage));
         if (currentPage > tp) setCurrentPage(tp);
-    }, [filteredAdopters.length]);
+    }, [currentPage, filteredAdopters.length]);
 
     useEffect(() => {
         setCurrentPage(1);

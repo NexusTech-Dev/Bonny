@@ -73,7 +73,7 @@ export default function HealthCardList() {
     useEffect(() => {
         const tp = Math.max(1, Math.ceil(filteredAnimals.length / itemsPerPage));
         if (currentPage > tp) setCurrentPage(tp);
-    }, [filteredAnimals.length]);
+    }, [currentPage, filteredAnimals.length]);
 
     useEffect(() => {
         setCurrentPage(1);
