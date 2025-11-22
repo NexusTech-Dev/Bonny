@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+// src/pages/Animal/AnimalList.tsx
+import React, { useState, useEffect } from "react";
 import { Plus, X, Trash2 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { deleteAnimalById, updateAnimalById } from "../../services/animalService.ts";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAnimals, type Animal } from "../../context/AnimalsContext.tsx";
+import AnimalListSkeleton from "../../Components/ProtectedSkeleton/AnimalListSkeleton.tsx";
 
 export default function AnimalList() {
     const [editForm, setEditForm] = useState<Animal | null>(null);
@@ -14,14 +16,30 @@ export default function AnimalList() {
     const [searchTerm, setSearchTerm] = useState("");
     const [selectedAnimal, setSelectedAnimal] = useState<Animal | null>(null);
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 8;
+
     const navigate = useNavigate();
-    const { animals, updateAnimalStatus, removeAnimalFromContext } = useAnimals();
+    const { animals, loading, updateAnimalStatus, removeAnimalFromContext } = useAnimals();
 
     const filteredAnimals = animals.filter(
         a =>
             a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             a.breed?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const totalPages = Math.max(1, Math.ceil(filteredAnimals.length / pageSize));
+    useEffect(() => {
+        if (currentPage > totalPages) setCurrentPage(totalPages);
+    }, [totalPages, currentPage]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
+
+    const startIndex = (currentPage - 1) * pageSize;
+    const endIndex = Math.min(startIndex + pageSize, filteredAnimals.length);
+    const paginatedAnimals = filteredAnimals.slice(startIndex, endIndex);
 
     const getStatusStyle = (status: Animal["status"]) => {
         switch (status) {
@@ -107,6 +125,15 @@ export default function AnimalList() {
         }
     };
 
+    const getPageNumbers = () => {
+        const pages: number[] = [];
+        let start = Math.max(1, currentPage - 2);
+        const end = Math.min(totalPages, start + 4);
+        if (end - start < 4) start = Math.max(1, end - 4);
+        for (let i = start; i <= end; i++) pages.push(i);
+        return pages;
+    };
+
     return (
         <div className="p-6 flex flex-col gap-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -127,55 +154,96 @@ export default function AnimalList() {
                 </div>
             </div>
 
-            {filteredAnimals.length === 0 ? (
+            {loading ? (
+                <AnimalListSkeleton count={pageSize} />
+            ) : filteredAnimals.length === 0 ? (
                 <div className="text-center text-gray-500 py-20">Nenhum animal encontrado.</div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {filteredAnimals.map(animal => (
-                        <div
-                            key={animal.id}
-                            className="rounded-2xl shadow-md hover:shadow-xl transition bg-white overflow-hidden group"
-                        >
-                            <div className="h-40 bg-gray-200 flex items-center justify-center relative">
-                                <span className="text-gray-400 group-hover:opacity-0 transition">Imagem</span>
-                                {animal.image && (
-                                    <img
-                                        src={animal.image}
-                                        alt={animal.name}
-                                        className="absolute inset-0 w-full h-full object-cover"
-                                    />
-                                )}
-                                <button
-                                    onClick={() => setDeleteAnimal(animal)}
-                                    className="absolute top-2 right-2 text-red-500 bg-white p-1 rounded-full hover:bg-red-50 transition"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
-                            </div>
-                            <div className="p-4 flex flex-col gap-2">
-                                <div className="flex justify-between items-center">
-                                    <h2 className="font-semibold text-gray-800 text-lg">{animal.name}</h2>
-                                    <span
-                                        className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusStyle(
-                                            animal.status
-                                        )}`}
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {paginatedAnimals.map(animal => (
+                            <div
+                                key={animal.id}
+                                className="rounded-2xl shadow-md hover:shadow-xl transition bg-white overflow-hidden group"
+                            >
+                                <div className="h-40 bg-gray-200 flex items-center justify-center relative">
+                                    <span className="text-gray-400 group-hover:opacity-0 transition">Imagem</span>
+                                    {animal.image && (
+                                        <img
+                                            src={animal.image}
+                                            alt={animal.name}
+                                            className="absolute inset-0 w-full h-full object-cover"
+                                        />
+                                    )}
+                                    <button
+                                        onClick={() => setDeleteAnimal(animal)}
+                                        className="absolute top-2 right-2 text-red-500 bg-white p-1 rounded-full hover:bg-red-50 transition"
                                     >
-                    {animal.status}
-                  </span>
+                                        <Trash2 size={16} />
+                                    </button>
                                 </div>
-                                <p className="text-sm text-gray-600">
-                                    {calcularIdade(animal.birthDate)} • {animal.breed || "-"}
-                                </p>
-                                <button
-                                    onClick={() => setSelectedAnimal(animal)}
-                                    className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
-                                >
-                                    Ver detalhes
-                                </button>
+                                <div className="p-4 flex flex-col gap-2">
+                                    <div className="flex justify-between items-center">
+                                        <h2 className="font-semibold text-gray-800 text-lg">{animal.name}</h2>
+                                        <span
+                                            className={`text-xs px-2 py-1 rounded-full font-medium ${getStatusStyle(
+                                                animal.status
+                                            )}`}
+                                        >
+                                            {animal.status}
+                                        </span>
+                                    </div>
+                                    <p className="text-sm text-gray-600">
+                                        {calcularIdade(animal.birthDate)} • {animal.breed || "-"}
+                                    </p>
+                                    <button
+                                        onClick={() => setSelectedAnimal(animal)}
+                                        className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
+                                    >
+                                        Ver detalhes
+                                    </button>
+                                </div>
                             </div>
+                        ))}
+                    </div>
+
+                    <div className="flex flex-col gap-5 items-center justify-between mt-6">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                aria-disabled={currentPage === 1}
+                                className={`px-3 py-1 rounded-md border border-gray-300 ${currentPage === 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-gray-100"}`}
+                            >
+                                Anterior
+                            </button>
+
+                            {getPageNumbers().map(n => (
+                                <button
+                                    key={n}
+                                    onClick={() => setCurrentPage(n)}
+                                    aria-current={n === currentPage ? "page" : undefined}
+                                    className={`px-3 py-1 rounded-md border ${n === currentPage ? "bg-blue-600 text-white border-blue-600" : "border-gray-300 hover:bg-gray-100"} cursor-pointer`}
+                                >
+                                    {n}
+                                </button>
+                            ))}
+
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                aria-disabled={currentPage === totalPages}
+                                className={`px-3 py-1 rounded-md border border-gray-300 ${currentPage === totalPages ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-gray-100"}`}
+                            >
+                                Próxima
+                            </button>
                         </div>
-                    ))}
-                </div>
+
+                        <div className="text-sm text-gray-600">
+                            Mostrando {startIndex + 1}–{endIndex} de {filteredAnimals.length}
+                        </div>
+                    </div>
+                </>
             )}
 
             <AnimatePresence>
