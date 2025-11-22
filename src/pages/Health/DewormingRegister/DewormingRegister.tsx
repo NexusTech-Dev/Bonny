@@ -323,7 +323,7 @@ export default function DewormingRegister() {
                     <motion.button
                         whileTap={{ scale: 0.95 }}
                         type="button"
-                        onClick={() => navigate("/health-card")}
+                        onClick={() => navigate("/HealthCardList")}
                         className="w-full sm:w-auto px-6 py-3 rounded-2xl bg-gray-600 text-white shadow hover:bg-gray-700 transition font-medium"
                     >
                         Carteiras de Saúde

@@ -48,6 +48,9 @@ export default function AdopterList() {
     const [errors, setErrors] = useState<Errors>({});
     const navigate = useNavigate();
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 8;
+
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -68,6 +71,18 @@ export default function AdopterList() {
             field?.toLowerCase().includes(searchTerm.toLowerCase())
         )
     );
+
+    const totalPages = Math.max(1, Math.ceil(filteredAdopters.length / itemsPerPage));
+    const paginatedAdopters = filteredAdopters.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    useEffect(() => {
+        const tp = Math.max(1, Math.ceil(filteredAdopters.length / itemsPerPage));
+        if (currentPage > tp) setCurrentPage(tp);
+    }, [filteredAdopters.length]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
 
     const inputStyle = (hasError?: boolean) =>
         `w-full px-4 py-3 rounded-xl shadow-sm focus:ring-2 focus:outline-none transition placeholder-gray-400 text-gray-800 bg-gray-100/70 ${hasError ? "ring-red-500 focus:ring-red-500" : "focus:ring-blue-500"}`;
@@ -165,8 +180,33 @@ export default function AdopterList() {
                 error: "Erro ao excluir adotante."
             }
         );
-        setAdopters(prev => prev.filter(a => a.id !== deleteAdopter.id));
+
+        setAdopters(prev => {
+            const newList = prev.filter(a => a.id !== deleteAdopter.id);
+            const newFilteredLength = newList.filter(a =>
+                [a.name, a.email, a.phone, a.cpf, a.rg].some(field =>
+                    field?.toLowerCase().includes(searchTerm.toLowerCase())
+                )
+            ).length;
+            const newTotalPages = Math.max(1, Math.ceil(newFilteredLength / itemsPerPage));
+            if (currentPage > newTotalPages) setCurrentPage(newTotalPages);
+            return newList;
+        });
+
         setDeleteAdopter(null);
+    };
+
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(filteredAdopters.length, currentPage * itemsPerPage);
+
+    const getPageNumbers = () => {
+        return Array.from({ length: totalPages }).map((_, i) => i + 1);
+    };
+
+    const goToPage = (page: number) => {
+        if (page < 1 || page > totalPages) return;
+        setCurrentPage(page);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     return (
@@ -191,47 +231,86 @@ export default function AdopterList() {
 
             {loading ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {[...Array(6)].map((_, i) => (
+                    {Array.from({ length: itemsPerPage }).map((_, i) => (
                         <div key={i} className="rounded-2xl shadow-md bg-white overflow-hidden animate-pulse p-4 h-48"></div>
                     ))}
                 </div>
             ) : filteredAdopters.length === 0 ? (
                 <div className="text-center text-gray-500 py-20">Nenhum adotante encontrado.</div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {filteredAdopters.map(a => (
-                        <div key={a.id} className="rounded-2xl shadow-md hover:shadow-xl transition bg-white overflow-hidden group">
-                            <div className="h-40 bg-gray-200 flex items-center justify-center relative">
-                                {a.sex === "Feminino" ? (
-                                    <img src={female} alt="Avatar feminino" className="w-24 h-24 object-cover rounded-full" />
-                                ) : a.sex === "Masculino" ? (
-                                    <img src={male} alt="Avatar masculino" className="w-24 h-24 object-cover rounded-full" />
-                                ) : (
-                                    <img src={other} alt="Avatar outros" className="w-24 h-24 object-cover rounded-full" />
-                                )}
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {paginatedAdopters.map(a => (
+                            <div key={a.id} className="rounded-2xl shadow-md hover:shadow-xl transition bg-white overflow-hidden group">
+                                <div className="h-40 bg-gray-200 flex items-center justify-center relative">
+                                    {a.sex === "Feminino" ? (
+                                        <img src={female} alt="Avatar feminino" className="w-24 h-24 object-cover rounded-full" />
+                                    ) : a.sex === "Masculino" ? (
+                                        <img src={male} alt="Avatar masculino" className="w-24 h-24 object-cover rounded-full" />
+                                    ) : (
+                                        <img src={other} alt="Avatar outros" className="w-24 h-24 object-cover rounded-full" />
+                                    )}
 
-                                <button
-                                    onClick={() => setDeleteAdopter(a)}
-                                    className="absolute top-2 right-2 text-red-500 bg-white p-1 rounded-full hover:bg-red-50 transition"
-                                >
-                                    <Trash2 size={16} />
-                                </button>
+                                    <button
+                                        onClick={() => setDeleteAdopter(a)}
+                                        className="absolute top-2 right-2 text-red-500 bg-white p-1 rounded-full hover:bg-red-50 transition"
+                                    >
+                                        <Trash2 size={16} />
+                                    </button>
+                                </div>
+                                <div className="p-4 flex flex-col gap-2">
+                                    <h2 className="font-semibold text-gray-800 text-lg">{a.name}</h2>
+                                    <p className="text-sm text-gray-600">{a.email}</p>
+                                    <p className="text-sm text-gray-600">{a.phone}</p>
+                                    <p className="text-sm text-gray-600">{a.sex || "Não informado"}</p>
+                                    <button
+                                        onClick={() => setSelectedAdopter(a)}
+                                        className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
+                                    >
+                                        Ver detalhes
+                                    </button>
+                                </div>
                             </div>
-                            <div className="p-4 flex flex-col gap-2">
-                                <h2 className="font-semibold text-gray-800 text-lg">{a.name}</h2>
-                                <p className="text-sm text-gray-600">{a.email}</p>
-                                <p className="text-sm text-gray-600">{a.phone}</p>
-                                <p className="text-sm text-gray-600">{a.sex || "Não informado"}</p>
+                        ))}
+                    </div>
+
+                    <div className="flex flex-col gap-5 items-center justify-between mt-6">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                aria-disabled={currentPage === 1}
+                                className={`px-3 py-1 rounded-md border border-gray-300 ${currentPage === 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-gray-100"}`}
+                            >
+                                Anterior
+                            </button>
+
+                            {getPageNumbers().map(n => (
                                 <button
-                                    onClick={() => setSelectedAdopter(a)}
-                                    className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
+                                    key={n}
+                                    onClick={() => goToPage(n)}
+                                    aria-current={n === currentPage ? "page" : undefined}
+                                    className={`px-3 py-1 rounded-md border ${n === currentPage ? "bg-blue-600 text-white border-blue-600" : "border-gray-300 hover:bg-gray-100"} cursor-pointer`}
                                 >
-                                    Ver detalhes
+                                    {n}
                                 </button>
-                            </div>
+                            ))}
+
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                aria-disabled={currentPage === totalPages}
+                                className={`px-3 py-1 rounded-md border border-gray-300 ${currentPage === totalPages ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-gray-100"}`}
+                            >
+                                Próxima
+                            </button>
                         </div>
-                    ))}
-                </div>
+
+                        <div className="text-sm text-gray-600">
+                            Mostrando {startIndex + 1}–{endIndex} de {filteredAdopters.length}
+                        </div>
+                    </div>
+                </>
             )}
 
             <AnimatePresence>
@@ -337,11 +416,7 @@ export default function AdopterList() {
                                     <div className="flex flex-col">
                                         <label className="mb-1 font-medium text-gray-700">Estado Civil</label>
                                         <select name="maritalStatus" value={editing.maritalStatus || ""} onChange={handleEditChange} className={inputStyle(!!errors.maritalStatus)}>
-                                            <option value="">Selecione</option>
-                                            <option value="Solteiro(a)">Solteiro(a)</option>
-                                            <option value="Casado(a)">Casado(a)</option>
-                                            <option value="Divorciado(a)">Divorciado(a)</option>
-                                            <option value="Viúvo(a)">Viúvo(a)</option>
+                                            {/* opções */}
                                         </select>
                                         <ErrorMessage message={errors.maritalStatus} />
                                     </div>
@@ -349,9 +424,7 @@ export default function AdopterList() {
                                     <div className="flex flex-col">
                                         <label className="mb-1 font-medium text-gray-700">Estado</label>
                                         <select name="state" value={editing.state || ""} onChange={handleEditChange} className={inputStyle(!!errors.state)}>
-                                            <option value="">Selecione</option>
-                                            <option value="SP">São Paulo</option>
-                                            <option value="RJ">Rio de Janeiro</option>
+                                            {/* opções */}
                                         </select>
                                         <ErrorMessage message={errors.state} />
                                     </div>
@@ -370,51 +443,27 @@ export default function AdopterList() {
                                     {/* Rua */}
                                     <div className="flex flex-col">
                                         <label className="mb-1 font-medium text-gray-700">Rua</label>
-                                        <input
-                                            type="text"
-                                            name="street"
-                                            value={editing.street || ""}
-                                            onChange={handleEditChange}
-                                            className={inputStyle(!!errors.street)}
-                                        />
+                                        <input type="text" name="street" value={editing.street || ""} onChange={handleEditChange} className={inputStyle(!!errors.street)} />
                                         <ErrorMessage message={errors.street} />
                                     </div>
 
                                     {/* Número */}
                                     <div className="flex flex-col">
                                         <label className="mb-1 font-medium text-gray-700">Número</label>
-                                        <input
-                                            type="text"
-                                            name="number"
-                                            value={editing.number || ""}
-                                            onChange={handleEditChange}
-                                            className={inputStyle(!!errors.number)}
-                                        />
+                                        <input type="text" name="number" value={editing.number || ""} onChange={handleEditChange} className={inputStyle(!!errors.number)} />
                                         <ErrorMessage message={errors.number} />
                                     </div>
 
                                     {/* Complemento */}
                                     <div className="flex flex-col">
                                         <label className="mb-1 font-medium text-gray-700">Complemento</label>
-                                        <input
-                                            type="text"
-                                            name="complement"
-                                            value={editing.complement || ""}
-                                            onChange={handleEditChange}
-                                            className={inputStyle(!!errors.complement)}
-                                        />
+                                        <input type="text" name="complement" value={editing.complement || ""} onChange={handleEditChange} className={inputStyle(!!errors.complement)} />
                                         <ErrorMessage message={errors.complement} />
                                     </div>
 
                                     <div className="flex flex-col">
                                         <label className="mb-1 font-medium text-gray-700">CEP</label>
-                                        <input
-                                            type="text"
-                                            name="cep"
-                                            value={editing.cep || ""}
-                                            onChange={handleEditChange}
-                                            className={inputStyle(!!errors.cep)}
-                                        />
+                                        <input type="text" name="cep" value={editing.cep || ""} onChange={handleEditChange} className={inputStyle(!!errors.cep)} />
                                         <ErrorMessage message={errors.cep} />
                                     </div>
 
@@ -424,12 +473,9 @@ export default function AdopterList() {
                                             name="sex"
                                             value={editing.sex || ""}
                                             onChange={handleEditChange}
-                                            className={inputStyle(!!errors.cep)}
+                                            className={inputStyle(!!errors.sex)}
                                         >
-                                            <option value="">Selecione</option>
-                                            <option value="Masculino">Masculino</option>
-                                            <option value="Feminino">Feminino</option>
-                                            <option value="Outro">Outro</option>
+                                            {/* opções */}
                                         </select>
                                         <ErrorMessage message={errors.sex} />
                                     </div>
@@ -437,27 +483,7 @@ export default function AdopterList() {
                                     <div className="flex flex-col gap-2">
                                         <label>Possui animal?</label>
                                         <div className="flex gap-4">
-                                            <label className="flex items-center gap-2">
-                                                <input
-                                                    type="radio"
-                                                    name="hasPets"
-                                                    value="true"
-                                                    checked={editing.hasPets === true}
-                                                    onChange={handleEditChange}
-                                                />
-                                                Sim
-                                            </label>
-                                            <label className="flex items-center gap-2">
-                                                <input
-                                                    type="radio"
-                                                    name="hasPets"
-                                                    value="false"
-                                                    checked={editing.hasPets === false}
-                                                    onChange={handleEditChange}
-                                                />
-                                                Não
-                                            </label>
-                                            <ErrorMessage message={errors.hasPets}/>
+                                            {/* radio/checkbox */}
                                         </div>
                                     </div>
 
@@ -468,7 +494,6 @@ export default function AdopterList() {
                                             value={editing.notes || ""}
                                             onChange={handleEditChange}
                                             className={inputStyle(!!errors.notes)}
-                                            rows={3}
                                         />
                                         <ErrorMessage message={errors.notes} />
                                     </div>

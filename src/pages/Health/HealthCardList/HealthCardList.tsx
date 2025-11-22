@@ -1,3 +1,5 @@
+// typescript
+// src/pages/Health/HealthCardList/HealthCardList.tsx
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Syringe, Shield, Pill, X, Trash2 } from "lucide-react";
@@ -8,10 +10,20 @@ import { getDewormings, deleteDewormingRecord } from "../../../services/dewormin
 import toast from "react-hot-toast";
 import type {HealthRecord} from "../types/healthRecord.ts";
 
+type AnimalShort = {
+    id: string;
+    name: string;
+    image?: string;
+    birthDate?: string;
+    breed?: string;
+};
+
+type TimestampLike = Date | { toDate?: () => Date } | string | number | null | undefined;
+
 export default function HealthCardList() {
     const { animals } = useAnimals();
     const [searchTerm, setSearchTerm] = useState("");
-    const [selectedAnimal, setSelectedAnimal] = useState<any | null>(null);
+    const [selectedAnimal, setSelectedAnimal] = useState<AnimalShort | null>(null);
     const [animalHealth, setAnimalHealth] = useState<{
         vaccines: HealthRecord[];
         antiparasitics: HealthRecord[];
@@ -21,6 +33,10 @@ export default function HealthCardList() {
         antiparasitics: [],
         dewormings: [],
     });
+
+    const [loading, setLoading] = useState(true);
+    const [currentPage, setCurrentPage] = useState(1);
+    const itemsPerPage = 8;
 
     useEffect(() => {
         const fetchHealthData = async () => {
@@ -38,6 +54,8 @@ export default function HealthCardList() {
             } catch (err) {
                 console.error(err);
                 toast.error("Erro ao carregar dados de saúde.");
+            } finally {
+                setLoading(false);
             }
         };
         fetchHealthData();
@@ -48,6 +66,18 @@ export default function HealthCardList() {
             a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
             a.breed?.toLowerCase().includes(searchTerm.toLowerCase())
     );
+
+    const totalPages = Math.max(1, Math.ceil(filteredAnimals.length / itemsPerPage));
+    const paginatedAnimals = filteredAnimals.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
+
+    useEffect(() => {
+        const tp = Math.max(1, Math.ceil(filteredAnimals.length / itemsPerPage));
+        if (currentPage > tp) setCurrentPage(tp);
+    }, [filteredAnimals.length]);
+
+    useEffect(() => {
+        setCurrentPage(1);
+    }, [searchTerm]);
 
     const calcularIdade = (birthDate?: string) => {
         if (!birthDate) return "Não informado";
@@ -62,12 +92,17 @@ export default function HealthCardList() {
         return anos > 0 ? `${anos} ano${anos !== 1 ? "s" : ""}` : `${meses} mês${meses !== 1 ? "es" : ""}`;
     };
 
-    const formatDate = (timestamp?: any) => {
+    const isWithToDate = (t: unknown): t is { toDate: () => Date } =>
+        typeof t === "object" && t !== null && typeof (t as { toDate?: unknown }).toDate === "function";
+
+    const formatDate = (timestamp?: TimestampLike) => {
         if (!timestamp) return "-";
-        const date =
-            timestamp.toDate?.() instanceof Date
-                ? timestamp.toDate()
-                : new Date(timestamp);
+        let date: Date;
+        if (isWithToDate(timestamp)) {
+            date = timestamp.toDate();
+        } else {
+            date = new Date(timestamp as string | number | Date);
+        }
         return date.toLocaleDateString("pt-BR");
     };
 
@@ -80,7 +115,6 @@ export default function HealthCardList() {
     const getAnimalDewormings = (id: string) =>
         animalHealth.dewormings.filter((d) => d.animalId === id);
 
-    // Funções de remoção
     const handleDelete = async (type: "vaccine" | "antiparasitic" | "deworming", id: string) => {
         if (!window.confirm("Tem certeza que deseja remover este registro?")) return;
 
@@ -111,6 +145,14 @@ export default function HealthCardList() {
         }
     };
 
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    const endIndex = Math.min(filteredAnimals.length, currentPage * itemsPerPage);
+
+    const getPageNumbers = () => {
+        return Array.from({ length: totalPages }).map((_, i) => i + 1);
+    };
+
+
     return (
         <div className="p-6 flex flex-col gap-6">
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
@@ -123,68 +165,113 @@ export default function HealthCardList() {
                 />
             </div>
 
-            {filteredAnimals.length === 0 ? (
+            {loading ? (
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                    {Array.from({ length: itemsPerPage }).map((_, i) => (
+                        <div key={i} className="rounded-2xl shadow-md bg-white overflow-hidden animate-pulse p-4 h-48"></div>
+                    ))}
+                </div>
+            ) : filteredAnimals.length === 0 ? (
                 <div className="text-center text-gray-500 py-20">
                     Nenhum animal encontrado.
                 </div>
             ) : (
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                    {filteredAnimals.map((animal) => {
-                        const vaccines = getAnimalVaccines(animal.id);
-                        const antiparasitics = getAnimalAntiparasitics(animal.id);
-                        const dewormings = getAnimalDewormings(animal.id);
+                <>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                        {paginatedAnimals.map((animal) => {
+                            const vaccines = getAnimalVaccines(animal.id);
+                            const antiparasitics = getAnimalAntiparasitics(animal.id);
+                            const dewormings = getAnimalDewormings(animal.id);
 
-                        return (
-                            <div
-                                key={animal.id}
-                                className="rounded-2xl shadow-md hover:shadow-xl transition bg-white overflow-hidden group"
-                            >
-                                <div className="h-40 bg-gray-200 flex items-center justify-center relative">
-                                    {animal.image ? (
-                                        <img
-                                            src={animal.image}
-                                            alt={animal.name}
-                                            className="absolute inset-0 w-full h-full object-cover"
-                                        />
-                                    ) : (
-                                        <span className="text-gray-400">Sem imagem</span>
-                                    )}
-                                </div>
-                                <div className="p-4 flex flex-col gap-2">
-                                    <h2 className="font-semibold text-gray-800 text-lg">
-                                        {animal.name}
-                                    </h2>
-                                    <p className="text-sm text-gray-600">
-                                        {calcularIdade(animal.birthDate)} •{" "}
-                                        {animal.breed || "-"}
-                                    </p>
-
-                                    <div className="flex flex-wrap items-center gap-3 text-sm mt-2">
-                                        <div className="flex items-center gap-1 text-blue-600">
-                                            <Syringe size={14} />
-                                            <span>{vaccines.length} vacinas</span>
-                                        </div>
-                                        <div className="flex items-center gap-1 text-green-600">
-                                            <Shield size={14} />
-                                            <span>{antiparasitics.length} antiparasitários</span>
-                                        </div>
-                                        <div className="flex items-center gap-1 text-purple-600">
-                                            <Pill size={14} />
-                                            <span>{dewormings.length} vermífugos</span>
-                                        </div>
+                            return (
+                                <div
+                                    key={animal.id}
+                                    className="rounded-2xl shadow-md hover:shadow-xl transition bg-white overflow-hidden group"
+                                >
+                                    <div className="h-40 bg-gray-200 flex items-center justify-center relative">
+                                        {animal.image ? (
+                                            <img
+                                                src={animal.image}
+                                                alt={animal.name}
+                                                className="absolute inset-0 w-full h-full object-cover"
+                                            />
+                                        ) : (
+                                            <span className="text-gray-400">Sem imagem</span>
+                                        )}
                                     </div>
+                                    <div className="p-4 flex flex-col gap-2">
+                                        <h2 className="font-semibold text-gray-800 text-lg">
+                                            {animal.name}
+                                        </h2>
+                                        <p className="text-sm text-gray-600">
+                                            {calcularIdade(animal.birthDate)} •{" "}
+                                            {animal.breed || "-"}
+                                        </p>
 
-                                    <button
-                                        onClick={() => setSelectedAnimal(animal)}
-                                        className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
-                                    >
-                                        Ver mais
-                                    </button>
+                                        <div className="flex flex-wrap items-center gap-3 text-sm mt-2">
+                                            <div className="flex items-center gap-1 text-blue-600">
+                                                <Syringe size={14} />
+                                                <span>{vaccines.length} vacinas</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-green-600">
+                                                <Shield size={14} />
+                                                <span>{antiparasitics.length} antiparasitários</span>
+                                            </div>
+                                            <div className="flex items-center gap-1 text-purple-600">
+                                                <Pill size={14} />
+                                                <span>{dewormings.length} vermífugos</span>
+                                            </div>
+                                        </div>
+
+                                        <button
+                                            onClick={() => setSelectedAnimal(animal)}
+                                            className="w-full mt-2 px-3 py-2 border border-gray-200 rounded-xl hover:bg-gray-100 transition text-sm font-medium"
+                                        >
+                                            Ver mais
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        );
-                    })}
-                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="flex flex-col gap-5 items-center justify-between mt-6">
+                        <div className="flex items-center gap-2">
+                            <button
+                                onClick={() => setCurrentPage(p => Math.max(1, p - 1))}
+                                disabled={currentPage === 1}
+                                aria-disabled={currentPage === 1}
+                                className={`px-3 py-1 rounded-md border border-gray-300 ${currentPage === 1 ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-gray-100"}`}
+                            >
+                                Anterior
+                            </button>
+
+                            {getPageNumbers().map(n => (
+                                <button
+                                    key={n}
+                                    onClick={() => setCurrentPage(n)}
+                                    aria-current={n === currentPage ? "page" : undefined}
+                                    className={`px-3 py-1 rounded-md border ${n === currentPage ? "bg-blue-600 text-white border-blue-600" : "border-gray-300 hover:bg-gray-100"} cursor-pointer`}
+                                >
+                                    {n}
+                                </button>
+                            ))}
+
+                            <button
+                                onClick={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
+                                disabled={currentPage === totalPages}
+                                aria-disabled={currentPage === totalPages}
+                                className={`px-3 py-1 rounded-md border border-gray-300 ${currentPage === totalPages ? "cursor-not-allowed opacity-50" : "cursor-pointer hover:bg-gray-100"}`}
+                            >
+                                Próxima
+                            </button>
+                        </div>
+
+                        <div className="text-sm text-gray-600">
+                            Mostrando {startIndex + 1}–{endIndex} de {filteredAnimals.length}
+                        </div>
+                    </div>
+                </>
             )}
 
             <AnimatePresence>
@@ -212,7 +299,6 @@ export default function HealthCardList() {
                                 {selectedAnimal.name} — Carteira de Saúde
                             </h2>
 
-                            {/* Vacinas */}
                             <div className="mb-6">
                                 <h3 className="font-semibold text-blue-700 flex items-center gap-2 mb-2">
                                     <Syringe size={18} /> Vacinas
@@ -244,7 +330,6 @@ export default function HealthCardList() {
                                 </div>
                             </div>
 
-                            {/* Antiparasitários */}
                             <div className="mb-6">
                                 <h3 className="font-semibold text-green-700 flex items-center gap-2 mb-2">
                                     <Shield size={18} /> Antiparasitários
@@ -276,7 +361,6 @@ export default function HealthCardList() {
                                 </div>
                             </div>
 
-                            {/* Vermífugos */}
                             <div>
                                 <h3 className="font-semibold text-purple-700 flex items-center gap-2 mb-2">
                                     <Pill size={18} /> Vermífugos
