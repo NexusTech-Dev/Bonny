@@ -162,12 +162,24 @@ export default function AnimalRegister() {
                             <label className="mb-1 font-medium text-gray-700">Sexo</label>
                             <div className="flex flex-wrap gap-4 items-center mt-1">
                                 <label className="flex items-center gap-2 text-gray-700">
-                                    <input type="radio" name="sex" value="M" onChange={handleChange}
-                                           className="accent-blue-600"/> Macho
+                                    <input
+                                        type="radio"
+                                        name="sex"
+                                        value="M"
+                                        checked={formData.sex === "M"}
+                                        onChange={handleChange}
+                                        className="accent-blue-600"
+                                    /> Macho
                                 </label>
                                 <label className="flex items-center gap-2 text-gray-700">
-                                    <input type="radio" name="sex" value="F" onChange={handleChange}
-                                           className="accent-blue-600"/> Fêmea
+                                    <input
+                                        type="radio"
+                                        name="sex"
+                                        value="F"
+                                        checked={formData.sex === "F"}
+                                        onChange={handleChange}
+                                        className="accent-blue-600"
+                                    /> Fêmea
                                 </label>
                             </div>
                             {errors.sex && <span className={errorStyle}>{errors.sex}</span>}
