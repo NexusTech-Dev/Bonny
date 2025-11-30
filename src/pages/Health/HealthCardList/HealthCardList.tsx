@@ -1,5 +1,3 @@
-// typescript
-// src/pages/Health/HealthCardList/HealthCardList.tsx
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Syringe, Shield, Pill, X, Trash2 } from "lucide-react";

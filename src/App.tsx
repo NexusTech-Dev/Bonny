@@ -4,7 +4,7 @@ import AnimalRegister from "./pages/Animal/AnimalRegister.tsx";
 import AnimalList from "./pages/Animal/AnimalList.tsx";
 import StaffRegister from "./pages/Staff/StaffRegister.tsx";
 import StaffList from "./pages/Staff/StaffList.tsx";
-import Dashboard from "./pages/Dashboard.tsx";
+import Dashboard from "./pages/Dashboard/Dashboard.tsx";
 import HealthScreen from "./pages/Health/HealthScreen.tsx";
 import AdoptionRegister from "./pages/Adoption/AdoptionRegister.tsx";
 import AdoptionList from "./pages/Adoption/AdoptionList.tsx";
