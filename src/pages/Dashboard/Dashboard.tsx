@@ -6,7 +6,6 @@ import {
     FileText,
     Heart,
     Calendar,
-    AlertCircle,
 } from "lucide-react";
 import {
     LineChart,
@@ -19,10 +18,22 @@ import {
     BarChart,
     Bar,
 } from "recharts";
-import { getAnimals } from "../services/animalService";
-import { getStaff } from "../services/staffService.ts";
-import type { Animal } from "../context/AnimalsContext";
-import { useAdoptions } from "../context/AdoptionsContext";
+import { getAnimals } from "../../services/animalService.ts";
+import { getStaff } from "../../services/staffService.ts";
+import type { Animal } from "../../context/AnimalsContext.tsx";
+import { useAdoptions } from "../../context/AdoptionsContext.tsx";
+import { getVaccines } from "../../services/vaccineService";
+import { getAntiparasitics } from "../../services/antiparasiticService";
+import { getDewormings } from "../../services/dewormingService";
+import {
+    getAnimalsWithLateVaccines,
+    getAnimalsWithLateAntiparasitics,
+    getAnimalsWithLateDeworming
+} from "./Alerts/HealthAlerts.ts";
+import type { HealthRecord } from "../Health/types/healthRecord.ts";
+import  AlertCard  from "../../Components/AlertCard/AlertCard.tsx";
+import toast from "react-hot-toast";
+
 
 export interface Staff {
     id: string;
@@ -38,17 +49,34 @@ export default function Dashboard() {
     const [animals, setAnimals] = useState<Animal[]>([]);
     const [staff, setStaff] = useState<Staff[]>([]);
     const [loading, setLoading] = useState(true);
+    const [vaccines, setVaccines] = useState<HealthRecord[]>([]);
+    const [antiparasitics, setAntiparasitics] = useState<HealthRecord[]>([]);
+    const [dewormings, setDewormings] = useState<HealthRecord[]>([]);
 
     useEffect(() => {
         async function fetchData() {
             setLoading(true);
             try {
-                const [animalsData, staffData] = await Promise.all([
+                const [
+                    animalsData,
+                    staffData,
+                    vaccinesData,
+                    antiparasiticsData,
+                    dewormingsData
+                ] = await Promise.all([
                     getAnimals(),
                     getStaff(),
+                    getVaccines(),
+                    getAntiparasitics(),
+                    getDewormings()
                 ]);
+
                 setAnimals(animalsData);
                 setStaff(staffData);
+                setVaccines(vaccinesData);
+                setAntiparasitics(antiparasiticsData);
+                setDewormings(dewormingsData);
+
             } catch (err) {
                 console.error(err);
             } finally {
@@ -61,18 +89,46 @@ export default function Dashboard() {
 
     const currentMonth = new Date().getMonth();
     const currentYear = new Date().getFullYear();
+    const lateVaccines = getAnimalsWithLateVaccines(animals, vaccines);
+    const lateAntiparasitics = getAnimalsWithLateAntiparasitics(animals, antiparasitics);
+    const lateDewormings = getAnimalsWithLateDeworming(animals, dewormings);
 
-    function parseDate(input: any): Date {
+    useEffect(() => {
+        if (!loading) {
+            const totalAlerts =
+                lateVaccines.length +
+                lateAntiparasitics.length +
+                lateDewormings.length;
+
+            if (totalAlerts > 0) {
+                toast.error(`⚠ Existem ${totalAlerts} alertas pendentes de saúde!`, {
+                    duration: 4500,
+                    style: {
+                        background: "#1f1f1f",
+                        color: "#fff",
+                        fontWeight: "600",
+                        padding: "14px 18px",
+                        borderRadius: "12px",
+                        border: "1px solid rgba(239, 68, 68, 0.25)",
+                        boxShadow: "0 4px 14px rgba(0,0,0,0.25)",
+                        fontSize: "14px",
+                    },
+                    iconTheme: {
+                        primary: "#ef4444",
+                        secondary: "#ffffff",
+                    },
+                });
+            }
+        }
+    }, [loading, lateVaccines, lateAntiparasitics, lateDewormings]);
+
+    function parseDate(input: Date | string | number | { toDate?: () => Date } | null | undefined): Date {
         if (!input) return new Date();
-
         if (input instanceof Date) return input;
-
-        if (typeof input === "object")
-            return input.toDate();
-
+        if (typeof input === "number") return new Date(input);
         if (typeof input === "string") return new Date(input);
-
-        return new Date(input);
+        if (typeof input === "object" && typeof input.toDate === "function") return input.toDate();
+        return new Date();
     }
 
     const cadastrosDoMes = animals.filter(animal => {
@@ -119,25 +175,6 @@ export default function Dashboard() {
             value: cadastrosDoMes,
             icon: Calendar,
             color: "bg-purple-100 text-purple-800",
-        },
-    ];
-
-    const alertColors = {
-        red: "border-red-500 bg-red-50 text-red-800",
-        yellow: "border-yellow-500 bg-yellow-50 text-yellow-800",
-        green: "border-green-500 bg-green-50 text-green-800",
-    };
-
-    const alerts = [
-        {
-            id: 1,
-            message: `${animals.filter((a) => a.needsVaccine).length} animais precisam de vacinação`,
-            color: "red",
-        },
-        {
-            id: 2,
-            message: `${animals.filter((a) => a.needsCheckup).length} animais precisam de checkup`,
-            color: "yellow",
         },
     ];
 
@@ -192,30 +229,37 @@ export default function Dashboard() {
             </motion.h1>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6 mb-10">
-                {stats.map((stat) => {
-                    const Icon = stat.icon;
-                    return (
-                        <motion.div
-                            key={stat.id}
-                            initial={{ opacity: 0, y: 15 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: stat.id * 0.1 }}
-                            className={`flex flex-col gap-3 p-5 rounded-2xl shadow-md ${stat.color}`}
-                        >
-                            <div className="flex items-center gap-3">
-                                <div className="p-3 bg-white rounded-full flex items-center justify-center shadow">
-                                    <Icon className="w-6 h-6" />
+                {loading ? (
+                    Array.from({ length: 5 }).map((_, i) => (
+                        <div
+                            key={i}
+                            className="animate-pulse bg-gray-200 h-24 rounded-2xl"
+                        ></div>
+                    ))
+                ) : (
+                    stats.map((stat) => {
+                        const Icon = stat.icon;
+                        return (
+                            <motion.div
+                                key={stat.id}
+                                initial={{ opacity: 0, y: 15 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ delay: stat.id * 0.1 }}
+                                className={`flex flex-col gap-3 p-5 rounded-2xl shadow-md ${stat.color}`}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="p-3 bg-white rounded-full flex items-center justify-center shadow">
+                                        <Icon className="w-6 h-6" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-xl font-bold">{stat.value}</span>
+                                        <span className="text-sm font-medium">{stat.label}</span>
+                                    </div>
                                 </div>
-                                <div className="flex flex-col">
-                  <span className="text-xl font-bold">
-                    {loading ? "..." : stat.value}
-                  </span>
-                                    <span className="text-sm font-medium">{stat.label}</span>
-                                </div>
-                            </div>
-                        </motion.div>
-                    );
-                })}
+                            </motion.div>
+                        );
+                    })
+                )}
             </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
@@ -267,7 +311,6 @@ export default function Dashboard() {
                 </div>
             </div>
 
-            {/* Tabela */}
             <div className="mb-10">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">
                     Últimos Animais Cadastrados
@@ -294,47 +337,63 @@ export default function Dashboard() {
                             </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
-                            {animals.slice(-5).map((animal) => (
-                                <tr
-                                    key={animal.id}
-                                    className="hover:bg-gray-50 transition-colors"
-                                >
-                                    <td className="px-6 py-4 text-gray-700 font-medium">
-                                        {animal.name}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-500">{animal.breed}</td>
-                                    <td className="px-6 py-4 text-gray-500">{animal.status}</td>
-                                    <td className="px-6 py-4 text-gray-500">
-                                        {animal.needsVaccine ? "Pendente" : "Ok"}
-                                    </td>
-                                    <td className="px-6 py-4 text-gray-500">
-                                        {animal.needsCheckup ? "Pendente" : "Ok"}
-                                    </td>
-                                </tr>
-                            ))}
+                            {loading
+                                ? Array.from({ length: 5 }).map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        <td className="px-6 py-4">
+                                            <div className="h-4 w-32 bg-gray-200 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="h-4 w-24 bg-gray-200 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="h-4 w-20 bg-gray-200 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                                        </td>
+                                        <td className="px-6 py-4">
+                                            <div className="h-4 w-16 bg-gray-200 rounded"></div>
+                                        </td>
+                                    </tr>
+                                ))
+                                : animals.slice(-5).map((animal) => (
+                                    <tr
+                                        key={animal.id}
+                                        className="hover:bg-gray-50 transition-colors"
+                                    >
+                                        <td className="px-6 py-4 text-gray-700 font-medium">
+                                            {animal.name}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-500">{animal.breed}</td>
+                                        <td className="px-6 py-4 text-gray-500">{animal.status}</td>
+                                        <td className="px-6 py-4 text-gray-500">
+                                            {animal.needsVaccine ? "Pendente" : "Ok"}
+                                        </td>
+                                        <td className="px-6 py-4 text-gray-500">
+                                            {animal.needsCheckup ? "Pendente" : "Ok"}
+                                        </td>
+                                    </tr>
+                                ))}
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            {/* Alertas */}
             <div>
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4">Alertas</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {alerts.map((alert, i) => (
-                        <motion.div
-                            key={alert.id}
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ delay: i * 0.1 }}
-                            className={`flex items-center p-4 rounded-xl shadow border-l-4 ${
-                                alertColors[alert.color as keyof typeof alertColors]
-                            }`}
-                        >
-                            <AlertCircle className="w-6 h-6 mr-2" />
-                            {alert.message}
-                        </motion.div>
-                    ))}
+                    {loading ? (
+                        Array.from({ length: 3 }).map((_, i) => (
+                            <div key={i} className="p-6 h-32 rounded-xl bg-gray-200 animate-pulse"></div>
+                        ))
+                    ) : (
+                        <>
+                            <AlertCard title="Vacinas atrasadas" color="red" items={lateVaccines} records={vaccines} />
+                            <AlertCard title="Antiparasitários atrasados" color="yellow" items={lateAntiparasitics} records={antiparasitics} />
+                            <AlertCard title="Vermífugos atrasados" color="yellow" items={lateDewormings} records={dewormings} />
+                        </>
+                    )}
                 </div>
             </div>
         </div>
