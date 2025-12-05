@@ -1,5 +1,5 @@
 import {db} from "../lib/firebase.ts";
-import {addDoc, collection, deleteDoc, doc, getDocs, updateDoc} from "firebase/firestore";
+import {addDoc, collection, deleteDoc, doc, getDocs, updateDoc, serverTimestamp} from "firebase/firestore";
 import type {Animal} from "../context/AnimalsContext.tsx";
 
 const animalsCollection = collection(db, "animals");
@@ -22,7 +22,7 @@ export async function registerAnimal(data: any, imageFile?: File) {
     const docRef = await addDoc(animalsCollection, {
         ...data,
         image: imageBase64,
-        createdAt: new Date(),
+        createdAt: serverTimestamp(),
     });
 
     return docRef.id;
@@ -56,7 +56,8 @@ export const getAnimals = async (): Promise<Animal[]> => {
             status: data.status || "Disponível",
             notes: data.notes || "",
             image: data.image || "",
-            birthDate: data.birthDate || ""
+            birthDate: data.birthDate || "",
+            createdAt: data.createdAt || null,
         };
     });
 };

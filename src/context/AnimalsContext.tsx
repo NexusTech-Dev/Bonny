@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react";
-import { collection, onSnapshot, doc, updateDoc, getDocs } from "firebase/firestore";
+import {collection, onSnapshot, doc, updateDoc, getDocs, type Timestamp} from "firebase/firestore";
 import { db } from "../lib/firebase.ts";
 
 export type Animal = {
@@ -18,6 +18,7 @@ export type Animal = {
     needsVaccine?: boolean;
     needsCheckup?: boolean;
     adoptionDate?: string;
+    createdAt?: Timestamp;
 };
 
 type AnimalsContextType = {

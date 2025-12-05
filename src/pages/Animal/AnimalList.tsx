@@ -21,11 +21,17 @@ export default function AnimalList() {
     const navigate = useNavigate();
     const { animals, loading, updateAnimalStatus, removeAnimalFromContext } = useAnimals();
 
-    const filteredAnimals = animals.filter(
-        a =>
-            a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-            a.breed?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const filteredAnimals = animals
+        .filter(
+            a =>
+                a.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                a.breed?.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .sort((a, b) => {
+            const dataA = a.createdAt?.seconds ?? 0;
+            const dataB = b.createdAt?.seconds ?? 0;
+            return dataB - dataA;
+        });
 
     const totalPages = Math.max(1, Math.ceil(filteredAnimals.length / pageSize));
     useEffect(() => {
@@ -99,7 +105,7 @@ export default function AnimalList() {
         setSaving(true);
         try {
             await updateAnimalById(editForm.id, editForm, selectedFile);
-            updateAnimalStatus(editForm.id, editForm.status);
+            await updateAnimalStatus(editForm.id, editForm.status);
             toast.success("Animal atualizado com sucesso!");
             setEditForm(null);
             setSelectedFile(undefined);

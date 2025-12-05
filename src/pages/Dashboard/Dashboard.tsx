@@ -217,13 +217,11 @@ export default function Dashboard() {
         return { month, registrations: count };
     });
 
-    const lastAnimals = [...animals]
-        .filter(a => !!a.rescueDate)
-        .sort((a, b) =>
-            new Date(b.rescueDate ?? 0).getTime() -
-            new Date(a.rescueDate ?? 0).getTime()
-        )
-        .slice(0, 5);
+    const sortedAnimals = [...animals].sort((a, b) => {
+        const tA = a.createdAt?.toMillis?.() ?? 0;
+        const tB = b.createdAt?.toMillis?.() ?? 0;
+        return tB - tA;
+    });
 
     return (
         <div className="min-h-screen p-6">
@@ -324,9 +322,9 @@ export default function Dashboard() {
                     Últimos Animais Cadastrados
                 </h2>
 
-                <div className="overflow-x-auto shadow-lg rounded-xl">
+                <div className="overflow-x-auto overflow-y-auto max-h-[350px] shadow-lg rounded-xl">
                     <table className="min-w-full bg-white divide-y divide-gray-200">
-                        <thead className="bg-gray-50 sticky top-0">
+                        <thead className="bg-gray-50 sticky top-0 z-10">
                             <tr>
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Nome
@@ -367,7 +365,7 @@ export default function Dashboard() {
                                         </td>
                                     </tr>
                                 ))
-                                : lastAnimals.map((animal) => (
+                                : sortedAnimals.map(animal => (
                                     <tr
                                         key={animal.id}
                                         className="hover:bg-gray-50 transition-colors"
