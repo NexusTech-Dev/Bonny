@@ -297,7 +297,7 @@ export default function Dashboard() {
 
                 <div className="p-6 bg-white shadow rounded-2xl">
                     <h2 className="text-xl font-semibold mb-4 text-gray-800">
-                        Cadastros nos últimos meses
+                        Resgate nos últimos meses
                     </h2>
                     <ResponsiveContainer width="100%" height={250}>
                         {registrationData.some(d => d.registrations > 0) ? (
@@ -335,12 +335,6 @@ export default function Dashboard() {
                                 <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                     Status
                                 </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Vacina
-                                </th>
-                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                    Check-up
-                                </th>
                             </tr>
                         </thead>
 
@@ -357,12 +351,6 @@ export default function Dashboard() {
                                         <td className="px-6 py-4">
                                             <div className="h-4 w-20 bg-gray-200 rounded"></div>
                                         </td>
-                                        <td className="px-6 py-4">
-                                            <div className="h-4 w-16 bg-gray-200 rounded"></div>
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <div className="h-4 w-16 bg-gray-200 rounded"></div>
-                                        </td>
                                     </tr>
                                 ))
                                 : sortedAnimals.map(animal => (
@@ -378,12 +366,6 @@ export default function Dashboard() {
                                         </td>
                                         <td className="px-6 py-4 text-gray-500">
                                             {animal.status}
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-500">
-                                            {animal.needsVaccine ? "Pendente" : "Ok"}
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-500">
-                                            {animal.needsCheckup ? "Pendente" : "Ok"}
                                         </td>
                                     </tr>
                                 ))}
