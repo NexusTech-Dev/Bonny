@@ -38,7 +38,6 @@ export const AnimalsProvider = ({ children }: { children: ReactNode }) => {
 
     useEffect(() => {
         const animalsCol = collection(db, "animals");
-        setLoading(true);
 
         const unsubscribe = onSnapshot(
             animalsCol,
